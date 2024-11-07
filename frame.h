@@ -52,8 +52,6 @@ public:
     /// \brief updateForegroundPixmap Update the color of the foreground pixmap at a specified canvas pixel position.
     /// \param pixelPos The canvas pixel position where the color will be updated.
     /// \param color The new color to have at pixelPos
-    /// \param sideLength The amount of canvas pixel on each axis
-    /// \param pixelSize The size of how many screen pixel represents a canvas pixel.
     ///
     void updateForegroundPixmap(QPoint pixelPos, QColor color);
 
