@@ -100,6 +100,9 @@ void Canvas::paintCheckerBoard(){
     const int rows = height() / pixelSize;
     const int cols = width() / pixelSize;
 
+    qDebug() << "height " << height() << "rows " << rows;
+    qDebug() << "width " << width() << "cols " << cols;
+
     QColor black(117, 117, 117);
     QColor white(204, 204, 204);
 

@@ -33,7 +33,7 @@ private:
     };
 
     //Temp value, will change based on decided default canvas size
-    const int DEFAULT_PIXEL_SIZE = 100;
+    const int DEFAULT_PIXEL_SIZE = 50;
 
     const QColor DEFAULT_COLOR = Qt::black;
     const enum Mode DEFAULT_MODE = BRUSH;
