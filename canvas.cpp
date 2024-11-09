@@ -34,6 +34,12 @@ void Canvas::selectTool(Mode mode)
     qDebug() << "selected mode" << mode;
 }
 
+void Canvas::setCurrentColor(int r, int g, int b, int a)
+{
+    selectedColor = QColor(r, g, b, a);
+    qDebug() << "Color changed. r: " << r << "g: " << g << "b: " << b << "a: " << a;
+}
+
 void Canvas::paintEvent(QPaintEvent *event) {
     Q_UNUSED(event);
 

@@ -162,7 +162,7 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>232</width>
+          <width>230</width>
           <height>98</height>
          </rect>
         </property>
@@ -796,7 +796,7 @@
           <number>10</number>
          </property>
          <item>
-          <widget class="QLabel" name="colorPreviewGoesHere">
+          <widget class="QLabel" name="colorPreview">
            <property name="text">
             <string>Color preview goes here</string>
            </property>

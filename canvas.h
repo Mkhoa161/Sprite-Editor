@@ -38,10 +38,10 @@ public:
 
     void paint(QPoint pixelPos);
 
-    void setCurrentColor(int r, int g, int b, int a);
-
 public slots:
     void selectTool(enum Mode newMode);
+
+    void setCurrentColor(int r, int g, int b, int a);
 
 private:
     //Temp value, will change based on decided default canvas size

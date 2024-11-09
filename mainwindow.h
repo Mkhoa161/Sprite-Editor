@@ -21,12 +21,16 @@ public:
 
 signals:
     void toolSelected(Canvas::Mode mode);
+    void setCurrentColor(int r, int g, int b, int a);
+    void setCurrentColorHex(QString hex);
 
 private slots:
-    void on_penButton_clicked(bool checked);
+    void emitColorChange();
+    void emitHexChange();
 
 private:
     Ui::MainWindow *ui;
     QButtonGroup* toolButtonGroup;
+    void updateColorPreview(QColor color);
 };
 #endif // MAINWINDOW_H
