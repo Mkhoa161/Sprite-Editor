@@ -43,15 +43,15 @@ MainWindow::MainWindow(QWidget *parent)
                 ui->eraserButton->setChecked(true);
             });
 
+    connect(this, &MainWindow::toolSelected, ui->canvas, &Canvas::selectTool);
+
     connect(toolButtonGroup,
             QOverload<QAbstractButton*>::of(&QButtonGroup::buttonClicked),
             this,
             [this](QAbstractButton* button){
                 int id = toolButtonGroup -> id(button);
-                // TODO: signal to canvas
+                emit toolSelected(static_cast<Canvas::Mode>(id));
             });
-
-
 }
 
 MainWindow::~MainWindow()
@@ -59,3 +59,9 @@ MainWindow::~MainWindow()
     delete ui;
     delete toolButtonGroup;
 }
+
+void MainWindow::on_penButton_clicked(bool checked)
+{
+
+}
+

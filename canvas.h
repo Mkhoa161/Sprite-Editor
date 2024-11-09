@@ -20,18 +20,30 @@ class Canvas : public QWidget
 {
     Q_OBJECT
 
-private:
+public:
     enum Mode {
-        BRUSH,
-        ERASER,
-        CIRCLE,
-        CIRCLEFILLED,
-        SQUARE,
-        SQUAREFILLED,
-        TRIANGLE,
-        TRIANGLEFILLED
+        BRUSH = 0,
+        ERASER = 1,
+        CIRCLE = 2,
+        CIRCLEFILLED = 3,
+        SQUARE = 4,
+        SQUAREFILLED = 5,
+        TRIANGLE = 6,
+        TRIANGLEFILLED = 7
     };
 
+    explicit Canvas(QWidget *parent = nullptr);
+
+    ~Canvas();
+
+    void paint(QPoint pixelPos);
+
+    void setCurrentColor(int r, int g, int b, int a);
+
+public slots:
+    void selectTool(enum Mode newMode);
+
+private:
     //Temp value, will change based on decided default canvas size
     const int DEFAULT_PIXEL_SIZE = 50;
 
@@ -49,7 +61,7 @@ private:
     QPixmap backgroundPixmap;
     QPixmap foregroundPixmap;
 
-    enum Mode currentMode;
+    enum Mode currentMode = DEFAULT_MODE;
     bool isMirrorMode;
 
     void paintEvent(QPaintEvent *event) override;
@@ -66,17 +78,6 @@ private:
 
     void paintCheckerBoard();
 
-public:
-
-    explicit Canvas(QWidget *parent = nullptr);
-
-    ~Canvas();
-
-    void paint(QPoint pixelPos);
-
-    void selectTool(enum Mode newMode);
-
-    void setCurrentColor(int r, int g, int b, int a);
 };
 
 #endif // CANVAS_H

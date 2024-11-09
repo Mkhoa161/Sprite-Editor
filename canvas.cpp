@@ -28,6 +28,12 @@ Canvas::~Canvas()
     delete ui;
 }
 
+void Canvas::selectTool(Mode mode)
+{
+    currentMode = mode;
+    qDebug() << "selected mode" << mode;
+}
+
 void Canvas::paintEvent(QPaintEvent *event) {
     Q_UNUSED(event);
 

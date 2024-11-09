@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QButtonGroup>
+#include "canvas.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -18,10 +19,14 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+signals:
+    void toolSelected(Canvas::Mode mode);
+
+private slots:
+    void on_penButton_clicked(bool checked);
+
 private:
     Ui::MainWindow *ui;
     QButtonGroup* toolButtonGroup;
-
-private slots:
 };
 #endif // MAINWINDOW_H
