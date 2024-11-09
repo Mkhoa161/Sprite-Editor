@@ -1,11 +1,14 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "canvassizing.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    connect(ui->actionChange_Dimensions, &QAction::triggered, this, &MainWindow::OnChangeDimensionClicked);
 
     toolButtonGroup = new QButtonGroup(this);
     toolButtonGroup->addButton(ui->penButton, 0); // numbers depending on the enum
@@ -57,4 +60,9 @@ MainWindow::~MainWindow()
 {
     delete ui;
     delete toolButtonGroup;
+}
+
+void MainWindow::OnChangeDimensionClicked(){
+    CanvasSizing canvasSizingWindow(this);
+    canvasSizingWindow.exec();
 }

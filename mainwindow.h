@@ -23,5 +23,6 @@ private:
     QButtonGroup* toolButtonGroup;
 
 private slots:
+    void OnChangeDimensionClicked();
 };
 #endif // MAINWINDOW_H
