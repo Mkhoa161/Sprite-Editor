@@ -1,0 +1,28 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file>resources/pixelPen.png</file>
+        <file>resources/mirror.png</file>
+        <file>resources/ccwRotate.png</file>
+        <file>resources/cwRotate.png</file>
+        <file>resources/FlipX.png</file>
+        <file>resources/FlipY.png</file>
+        <file>resources/Eraser.png</file>
+        <file>resources/addFrame.png</file>
+        <file>resources/box.png</file>
+        <file>resources/boxFilled.png</file>
+        <file>resources/boxFilledSelected.png</file>
+        <file>resources/boxSelected.png</file>
+        <file>resources/sphere.png</file>
+        <file>resources/sphereFilled.png</file>
+        <file>resources/sphereFilledSelected.png</file>
+        <file>resources/sphereSelected.png</file>
+        <file>resources/triangle.png</file>
+        <file>resources/triangleFilled.png</file>
+        <file>resources/triangleFilledSelected.png</file>
+        <file>resources/triangleSelected.png</file>
+        <file>resources/eraser_menu.png</file>
+        <file>resources/eraserFilled.png</file>
+        <file>resources/pen.png</file>
+        <file>resources/penSelected.png</file>
+    </qresource>
+</RCC>
