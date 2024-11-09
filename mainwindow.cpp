@@ -69,16 +69,18 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->colorHex, &QTextEdit::textChanged, this, &MainWindow::emitHexChange);
     connect(this, &MainWindow::setCurrentColor, ui->canvas, &Canvas::setCurrentColor);
 
-    //Just to start with some defaults, we can discuss how to change this later
-    //The timer defers the signal emission until after the constructor finishes
-    //We store private defaults in the canvas class, but maybe they should be stored here?
+    //The timer defers these calls until after the constructor so all the signals can be... signaled
     QTimer::singleShot(0, this, [this]() {
-        ui->penButton->setChecked(true);
-        ui->spinBox_red->setValue(255);
-        ui->spinBox_green->setValue(255);
-        ui->spinBox_blue->setValue(255);
-        ui->spinBox_alpha->setValue(255);
-        emit toolSelected(Canvas::BRUSH);
+        Canvas::Mode defaultMode = ui->canvas->DEFAULT_MODE;
+        QColor defaultColor = ui->canvas->DEFAULT_COLOR;
+        QAbstractButton* defaultButton = toolButtonGroup->button(static_cast<int>(defaultMode));
+        if (defaultButton) {
+            defaultButton->setChecked(true);
+        }
+        ui->spinBox_red->setValue(defaultColor.red());
+        ui->spinBox_green->setValue(defaultColor.green());
+        ui->spinBox_blue->setValue(defaultColor.blue());
+        ui->spinBox_alpha->setValue(defaultColor.alpha());
     });
 }
 
