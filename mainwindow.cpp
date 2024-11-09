@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <QTimer>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -67,6 +68,18 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->slider_alpha, &QSlider::valueChanged, this, &MainWindow::emitColorChange);
     connect(ui->colorHex, &QTextEdit::textChanged, this, &MainWindow::emitHexChange);
     connect(this, &MainWindow::setCurrentColor, ui->canvas, &Canvas::setCurrentColor);
+
+    //Just to start with some defaults, we can discuss how to change this later
+    //The timer defers the signal emission until after the constructor finishes
+    //We store private defaults in the canvas class, but maybe they should be stored here?
+    QTimer::singleShot(0, this, [this]() {
+        ui->penButton->setChecked(true);
+        ui->spinBox_red->setValue(255);
+        ui->spinBox_green->setValue(255);
+        ui->spinBox_blue->setValue(255);
+        ui->spinBox_alpha->setValue(255);
+        emit toolSelected(Canvas::BRUSH);
+    });
 }
 
 MainWindow::~MainWindow()
