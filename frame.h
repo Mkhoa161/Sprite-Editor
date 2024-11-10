@@ -49,30 +49,18 @@ public:
     void resizePixmap(int newSideLength, int pixelSize);
 
     ///
-    /// \brief updateForegroundPixmap Update the color of the foreground pixmap at a specified canvas pixel position.
+    /// \brief updatePixmap Update the color of the pixmap at a specified canvas pixel position.
     /// \param pixelPos The canvas pixel position where the color will be updated.
     /// \param color The new color to have at pixelPos
     ///
-    void updateForegroundPixmap(QPoint pixelPos, QColor color);
+    void updatePixmap(QPoint pixelPos, QColor color);
 
     ///
-    /// \brief updateBackgroundPixmap Update the background pixmap to the checker board.
-    /// \param sideLength The amount of canvas pixel on each axis.
-    /// \param pixelSize The size of how many screen pixel represents a canvas pixel.
+    /// \brief pixmap The QPixmap where the painting is stored. This will be what the user paints.
     ///
-    void updateBackgroundPixmap(int sideLength, int pixelSize);
+    QPixmap pixmap;
 
 private:
-    ///
-    /// \brief backgroundPixmap The QPixmap where the background checker board is painted on.
-    ///
-    QPixmap backgroundPixmap;
-
-    ///
-    /// \brief foregroundPixmap The QPixmap where the foreground painting is stored. This will be what the user paints.
-    ///
-    QPixmap foregroundPixmap;
-
     ///
     /// \brief sideLength The amount of canvas pixel on each axis.
     ///

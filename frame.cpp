@@ -9,27 +9,23 @@
 #include <QtSwap>
 
 Frame::Frame(int sideLength, int pixelSize){
-    foregroundPixmap = QPixmap(sideLength, sideLength);
-    backgroundPixmap = QPixmap(sideLength, sideLength);
+    pixmap = QPixmap(sideLength, sideLength);
 
-    foregroundPixmap.fill(Qt::transparent);
-    updateBackgroundPixmap(sideLength, pixelSize);
+    pixmap.fill(Qt::transparent);
 }
 
 Frame::Frame(const Frame& other){
-    foregroundPixmap = QPixmap(other.foregroundPixmap);
-    backgroundPixmap = QPixmap(other.backgroundPixmap);
+    pixmap = QPixmap(other.pixmap);
 }
 
 Frame& Frame::operator =(Frame other){
-    qSwap(foregroundPixmap, other.foregroundPixmap);
-    qSwap(backgroundPixmap, other.backgroundPixmap);
+    qSwap(pixmap, other.pixmap);
 
     return *this;
 }
 
 QJsonObject Frame::ConvertToJson(){
-    QImage image = foregroundPixmap.toImage();
+    QImage image = pixmap.toImage();
 
     QJsonObject frame;
     frame["sideLength"] = image.height();
@@ -77,7 +73,7 @@ void Frame::LoadFromJson(QJsonObject json){
         }
     }
 
-    foregroundPixmap = QPixmap::fromImage(image);
+    pixmap = QPixmap::fromImage(image);
 }
 
 void Frame::resizePixmap(int newSideLength, int newPixelSize){
@@ -85,30 +81,12 @@ void Frame::resizePixmap(int newSideLength, int newPixelSize){
     pixelSize = newPixelSize;
     int newResolution = newSideLength * newPixelSize;
 
-    QPainter painter(&foregroundPixmap);
-    painter.drawPixmap(0, 0, foregroundPixmap.scaled(newResolution, newResolution, Qt::IgnoreAspectRatio));
-
-    updateBackgroundPixmap(newSideLength, newPixelSize);
+    QPainter painter(&pixmap);
+    painter.drawPixmap(0, 0, pixmap.scaled(newResolution, newResolution, Qt::IgnoreAspectRatio));
 }
 
-void Frame::updateForegroundPixmap(QPoint pixelPos, QColor color){
-    QPainter painter(&foregroundPixmap);
+void Frame::updatePixmap(QPoint pixelPos, QColor color){
+    QPainter painter(&pixmap);
 
     painter.fillRect(pixelPos.x() * pixelSize, pixelPos.y() * pixelSize, pixelSize, pixelSize, color);
-}
-
-void Frame::updateBackgroundPixmap(int sideLength, int pixelSize){
-    QColor black(117, 117, 117);
-    QColor white(204, 204, 204);
-
-    QPainter painter(&backgroundPixmap);
-    for (int x = 0; x < sideLength; x++) {
-        for (int y = 0; y < sideLength; y++) {
-            int pixelOriginX = x * pixelSize;
-            int pixelOriginY = y * pixelSize;
-            bool isWhite = (x + y) % 2 == 1;
-
-            painter.fillRect(pixelOriginX, pixelOriginY, pixelSize, pixelSize, isWhite ? white : black);
-        }
-    }
 }

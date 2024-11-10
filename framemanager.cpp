@@ -67,5 +67,5 @@ const std::vector<Frame>& FrameManager::getFrames() const {
 }
 
 void FrameManager::paintCurrentFrame(QPoint pixelPos, QColor color){
-    frames[selectedFrameIndex].updateForegroundPixmap(pixelPos, color);
+    frames[selectedFrameIndex].updatePixmap(pixelPos, color);
 }
