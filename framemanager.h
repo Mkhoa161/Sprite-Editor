@@ -16,6 +16,9 @@ public:
     const Frame& getSelectedFrame() const;
     const std::vector<Frame>& getFrames() const;
 
+public slots:
+    void paintCurrentFrame(QPoint pixelPos, QColor color);
+
 private:
     std::vector<Frame> frames;
     int selectedFrameIndex;
