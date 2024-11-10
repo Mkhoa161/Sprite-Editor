@@ -1,14 +1,15 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "framemanager.h"
 #include "canvassizing.h"
+#include <QTimer>
 
-MainWindow::MainWindow(QWidget *parent)
+MainWindow::MainWindow(FrameManager& frameManager, QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
-    connect(ui->actionChange_Dimensions, &QAction::triggered, this, &MainWindow::OnChangeDimensionClicked);
+    ui->canvas->resize(400, 400);
 
     toolButtonGroup = new QButtonGroup(this);
     toolButtonGroup->addButton(ui->penButton, 0); // numbers depending on the enum
@@ -45,21 +46,121 @@ MainWindow::MainWindow(QWidget *parent)
                 ui->eraserButton->setChecked(true);
             });
 
+    connect(this, &MainWindow::toolSelected, ui->canvas, &Canvas::selectTool);
+
+    //Changes modes of the selected tool in canvas
     connect(toolButtonGroup,
-            QOverload<QAbstractButton*>::of(&QButtonGroup::buttonClicked),
+            QOverload<QAbstractButton*, bool>::of(&QButtonGroup::buttonToggled),
             this,
-            [this](QAbstractButton* button){
-                int id = toolButtonGroup -> id(button);
-                // TODO: signal to canvas
+            [this](QAbstractButton* button, bool checked){
+                if (checked) {
+                    int id = toolButtonGroup->id(button);
+                    emit toolSelected(static_cast<Canvas::Mode>(id));
+                }
             });
 
+    //Handle color changes
+    connect(ui->spinBox_red, QOverload<int>::of(&QSpinBox::valueChanged), this, &MainWindow::emitColorChange);
+    connect(ui->slider_red, &QSlider::valueChanged, this, &MainWindow::emitColorChange);
+    connect(ui->spinBox_green, QOverload<int>::of(&QSpinBox::valueChanged), this, &MainWindow::emitColorChange);
+    connect(ui->slider_green, &QSlider::valueChanged, this, &MainWindow::emitColorChange);
+    connect(ui->spinBox_blue, QOverload<int>::of(&QSpinBox::valueChanged), this, &MainWindow::emitColorChange);
+    connect(ui->slider_blue, &QSlider::valueChanged, this, &MainWindow::emitColorChange);
+    connect(ui->spinBox_alpha, QOverload<int>::of(&QSpinBox::valueChanged), this, &MainWindow::emitColorChange);
+    connect(ui->slider_alpha, &QSlider::valueChanged, this, &MainWindow::emitColorChange);
+    connect(ui->colorHex, &QTextEdit::textChanged, this, &MainWindow::emitHexChange);
+    connect(this, &MainWindow::setCurrentColor, ui->canvas, &Canvas::setCurrentColor);
 
+    //The timer defers these calls until after the constructor so all the signals can be... signaled
+    QTimer::singleShot(0, this, [this]() {
+        Canvas::Mode defaultMode = ui->canvas->DEFAULT_MODE;
+        QColor defaultColor = ui->canvas->DEFAULT_COLOR;
+        QAbstractButton* defaultButton = toolButtonGroup->button(static_cast<int>(defaultMode));
+        if (defaultButton) {
+            defaultButton->setChecked(true);
+        }
+        ui->spinBox_red->setValue(defaultColor.red());
+        ui->spinBox_green->setValue(defaultColor.green());
+        ui->spinBox_blue->setValue(defaultColor.blue());
+        ui->spinBox_alpha->setValue(defaultColor.alpha());
+    });
+
+    connect(ui->actionChange_Dimensions, &QAction::triggered, this, &MainWindow::OnChangeDimensionClicked);
+
+    connect(ui->canvas, &Canvas::paint, &frameManager, &FrameManager::onPainted);
+    connect(&frameManager, &FrameManager::selectedFrameChanged, ui->canvas, &Canvas::onSelectedFrameChanged);
+    connect(this, &MainWindow::frameAdded, &frameManager, &FrameManager::onFrameAdded);
+    connect(&frameManager, &FrameManager::sideLengthChanged, ui->canvas, &Canvas::onSideLengthChanged);
+
+    frameManager.onFrameAdded();
+    frameManager.setSideLength(16);
+}
+
+void MainWindow::testSlot(Frame *frame){
+    qDebug() << "test slot exec";
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
     delete toolButtonGroup;
+}
+
+void MainWindow::emitColorChange()
+{
+    int r = ui->spinBox_red->value();
+    int g = ui->spinBox_green->value();
+    int b = ui->spinBox_blue->value();
+    int a = ui->spinBox_alpha->value();
+    QColor rgbToHex(r, g, b, a);
+
+    // Temporarily block signals to avoid recursion
+    ui->colorHex->blockSignals(true);
+    ui->colorHex->setPlainText(rgbToHex.name(QColor::HexArgb));
+    ui->colorHex->blockSignals(false);
+    updateColorPreview(rgbToHex);
+
+    emit setCurrentColor(r, g, b, a);
+}
+void MainWindow::emitHexChange()
+{
+    QString hex = ui->colorHex->toPlainText();
+    QColor hexToRGB(hex);
+
+    if (!hexToRGB.isValid()) {
+        return;
+    }
+
+    // Temporarily block signals to avoid recursion
+    ui->spinBox_red->blockSignals(true);
+    ui->spinBox_green->blockSignals(true);
+    ui->spinBox_blue->blockSignals(true);
+    ui->spinBox_alpha->blockSignals(true);
+
+    ui->spinBox_red->setValue(hexToRGB.red());
+    ui->spinBox_green->setValue(hexToRGB.green());
+    ui->spinBox_blue->setValue(hexToRGB.blue());
+    ui->spinBox_alpha->setValue(hexToRGB.alpha());
+
+    ui->spinBox_red->blockSignals(false);
+    ui->spinBox_green->blockSignals(false);
+    ui->spinBox_blue->blockSignals(false);
+    ui->spinBox_alpha->blockSignals(false);
+
+    emitColorChange();
+}
+
+void MainWindow::updateColorPreview(QColor color)
+{
+
+    QString colorString = color.name(QColor::HexArgb);
+    ui->colorPreview->setStyleSheet(QString("background-color: %1;").arg(colorString));
+}
+
+
+void MainWindow::on_addFrameButton_clicked()
+{
+    emit frameAdded();
 }
 
 void MainWindow::OnChangeDimensionClicked(){

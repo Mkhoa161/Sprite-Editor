@@ -1,11 +1,13 @@
 #include "mainwindow.h"
+#include "framemanager.h"
 
 #include <QApplication>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    MainWindow w;
+    FrameManager frameManager;
+    MainWindow w(frameManager);
 
     QString brightStyleSheet = "QWidget {"
                              "  background-color: #EEEEEE;"
