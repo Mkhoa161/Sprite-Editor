@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "framemanager.h"
 #include <QTimer>
 
 MainWindow::MainWindow(FrameManager& frameManager, QWidget *parent)
@@ -83,7 +84,7 @@ MainWindow::MainWindow(FrameManager& frameManager, QWidget *parent)
         ui->spinBox_alpha->setValue(defaultColor.alpha());
     });
 
-    connect(ui->canvas, &Canvas::paint, &frameManager, &FrameManager::paintCurrentFrame);
+    //connect(ui->canvas, &Canvas::paint, &frameManager, &FrameManager::paintCurrentFrame);
 }
 
 MainWindow::~MainWindow()

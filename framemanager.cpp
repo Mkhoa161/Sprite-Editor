@@ -1,9 +1,7 @@
 #include "framemanager.h"
 
-// Constructor
-FrameManager::FrameManager(int sideLength, int pixelSize, int fps)
-    : selectedFrameIndex(-1), sideLength(sideLength), pixelSize(pixelSize), fps(fps) {
-
+FrameManager::FrameManager(int sideLength, int pixelSize, int fps, QObject *parent)
+    : selectedFrameIndex(-1), sideLength(sideLength), pixelSize(pixelSize), fps(fps), QObject{parent} {
 }
 
 void FrameManager::setSideLength(int length) {
