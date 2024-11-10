@@ -95,6 +95,6 @@ void Frame::updatePixmap(QPoint pixelPos, QColor color){
     }
 
     QPainter painter(&pixmap);
-
+    painter.setCompositionMode(QPainter::CompositionMode_Source);
     painter.fillRect(pixelPos.x(), pixelPos.y(), 1, 1, color);
 }
