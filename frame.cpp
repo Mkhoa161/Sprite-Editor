@@ -13,10 +13,7 @@
 Frame::Frame(int sideLength){
     pixmap = QPixmap(sideLength, sideLength);
     pixmap.fill(Qt::transparent);
-
     this->sideLength = sideLength;
-
-    qDebug() << "frame ctor called";
 }
 
 Frame::Frame(const Frame& other){
@@ -82,11 +79,12 @@ void Frame::LoadFromJson(QJsonObject json){
 }
 
 void Frame::resizePixmap(int newSideLength){
-    sideLength = newSideLength;
-    int newResolution = newSideLength;
+    QPixmap newPixmap(newSideLength, newSideLength);
+    newPixmap.fill(Qt::transparent);
+    QPainter painter(&newPixmap);
 
-    QPainter painter(&pixmap);
-    painter.drawPixmap(0, 0, pixmap.scaled(newResolution, newResolution, Qt::IgnoreAspectRatio));
+    painter.drawPixmap(0, 0, pixmap);
+    qSwap(pixmap, newPixmap);
 }
 
 void Frame::updatePixmap(QPoint pixelPos, QColor color){
@@ -95,6 +93,6 @@ void Frame::updatePixmap(QPoint pixelPos, QColor color){
     }
 
     QPainter painter(&pixmap);
-
+    qDebug() << 20;
     painter.fillRect(pixelPos.x(), pixelPos.y(), 1, 1, color);
 }

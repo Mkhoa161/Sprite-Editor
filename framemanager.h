@@ -12,7 +12,7 @@ class FrameManager : public QObject
     Q_OBJECT
 public:
     explicit FrameManager(int sideLength = 16, int fps = 30, QObject *parent = nullptr);
-    void setSideLength(int length);
+
     void selectFrame(int frameIndex);
 
     void removeFrame(int frameIndex);
@@ -27,6 +27,7 @@ signals:
 public slots:
     void onPainted(QPoint pixelPos, QColor color);
     void onFrameAdded();
+    void onSetSideLength(int length);
 
 private:
     std::vector<Frame*> frames;

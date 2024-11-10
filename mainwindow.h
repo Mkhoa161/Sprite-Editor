@@ -5,6 +5,7 @@
 #include <QButtonGroup>
 #include "canvas.h"
 #include "framemanager.h"
+#include "canvassizing.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -38,7 +39,9 @@ public slots:
 private:
     Ui::MainWindow *ui;
     QButtonGroup* toolButtonGroup;
+    CanvasSizing* canvasSizing;
     void updateColorPreview(QColor color);
+
     
 private slots:
     void OnChangeDimensionClicked();

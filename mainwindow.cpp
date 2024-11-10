@@ -11,6 +11,8 @@ MainWindow::MainWindow(FrameManager& frameManager, QWidget *parent)
     ui->setupUi(this);
     ui->canvas->resize(400, 400);
 
+    canvasSizing = new CanvasSizing();
+
     toolButtonGroup = new QButtonGroup(this);
     toolButtonGroup->addButton(ui->penButton, 0); // numbers depending on the enum
     toolButtonGroup->addButton(ui->eraserButton, 1);
@@ -86,14 +88,16 @@ MainWindow::MainWindow(FrameManager& frameManager, QWidget *parent)
     });
 
     connect(ui->actionChange_Dimensions, &QAction::triggered, this, &MainWindow::OnChangeDimensionClicked);
+    connect(canvasSizing, &CanvasSizing::applyClicked, ui->canvas, &Canvas::onSideLengthChanged);
+    connect(canvasSizing, &CanvasSizing::applyClicked, &frameManager, &FrameManager::onSetSideLength);
 
     connect(ui->canvas, &Canvas::paint, &frameManager, &FrameManager::onPainted);
     connect(&frameManager, &FrameManager::selectedFrameChanged, ui->canvas, &Canvas::onSelectedFrameChanged);
     connect(this, &MainWindow::frameAdded, &frameManager, &FrameManager::onFrameAdded);
     connect(&frameManager, &FrameManager::sideLengthChanged, ui->canvas, &Canvas::onSideLengthChanged);
 
+    frameManager.onSetSideLength(16);
     frameManager.onFrameAdded();
-    frameManager.setSideLength(16);
 }
 
 void MainWindow::testSlot(Frame *frame){
@@ -164,6 +168,5 @@ void MainWindow::on_addFrameButton_clicked()
 }
 
 void MainWindow::OnChangeDimensionClicked(){
-    CanvasSizing canvasSizingWindow(this);
-    canvasSizingWindow.exec();
+    canvasSizing->exec();
 }

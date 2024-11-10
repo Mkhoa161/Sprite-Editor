@@ -7,7 +7,7 @@ FrameManager::FrameManager(int sideLength, int fps, QObject *parent)
     : selectedFrameIndex(-1), sideLength(sideLength), fps(fps), QObject{parent} {
 }
 
-void FrameManager::setSideLength(int length) {
+void FrameManager::onSetSideLength(int length) {
     sideLength = length;
     for (Frame* frame : frames) {
         frame->resizePixmap(sideLength);
