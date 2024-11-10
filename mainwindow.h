@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QButtonGroup>
+#include "canvas.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -18,10 +19,18 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+signals:
+    void toolSelected(Canvas::Mode mode);
+    void setCurrentColor(int r, int g, int b, int a);
+    void setCurrentColorHex(QString hex);
+
+private slots:
+    void emitColorChange();
+    void emitHexChange();
+
 private:
     Ui::MainWindow *ui;
     QButtonGroup* toolButtonGroup;
-
-private slots:
+    void updateColorPreview(QColor color);
 };
 #endif // MAINWINDOW_H
