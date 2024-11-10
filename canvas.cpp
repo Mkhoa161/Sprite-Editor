@@ -39,8 +39,6 @@ void Canvas::setCurrentColor(int r, int g, int b, int a)
 }
 
 void Canvas::onSelectedFrameChanged(Frame *newSelectedFrame){
-    qDebug() << "1111111111111111111111111111111111111111111111111111111111111111111";
-    qDebug() << "calling onSelectedFrameChanged, recevied: " << (newSelectedFrame == nullptr);
     foregroundPixmap = &(newSelectedFrame->pixmap);
 }
 
@@ -50,13 +48,13 @@ void Canvas::paintEvent(QPaintEvent *event) {
     QPainter painter(this);
     painter.drawPixmap(0, 0, backgroundPixmap);
 
-    //qDebug() << "Repaint: is foreground pixmap null? " << (bool)(foregroundPixmap == nullptr);
-
     if(foregroundPixmap != nullptr){
-
-        painter.drawPixmap(0, 0, *foregroundPixmap);
+        int scaledResolution = foregroundPixmap->height() * pixelSize;
+        painter.drawPixmap(0, 0, foregroundPixmap->scaled(scaledResolution, scaledResolution));
     }
 }
+
+//    painter.drawPixmap(0, 0, pixmap.scaled(newResolution, newResolution, Qt::IgnoreAspectRatio));
 
 void Canvas::mouseMoveEvent(QMouseEvent *event){
     QPoint localPos = event->pos();
@@ -71,7 +69,7 @@ void Canvas::mouseMoveEvent(QMouseEvent *event){
     //qDebug() << "Cursor pixel position:" << mousePixelPos;
 
     if(isPressingMouse && mousePixelPos != QPoint(-1, -1)) {
-        emit paint(mousePixelPos, Qt::red);
+        emit paint(mousePixelPos, selectedColor);
         repaint();
     }
 }

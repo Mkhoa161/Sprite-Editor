@@ -86,6 +86,12 @@ MainWindow::MainWindow(FrameManager& frameManager, QWidget *parent)
 
     connect(ui->canvas, &Canvas::paint, &frameManager, &FrameManager::onPainted);
     connect(&frameManager, &FrameManager::selectedFrameChanged, ui->canvas, &Canvas::onSelectedFrameChanged);
+    //connect(&frameManager, &FrameManager::selectedFrameChanged, this, &MainWindow::testSlot);
+    connect(this, &MainWindow::frameAdded, &frameManager, &FrameManager::onFrameAdded);
+}
+
+void MainWindow::testSlot(Frame *frame){
+    qDebug() << "test slot exec";
 }
 
 MainWindow::~MainWindow()
@@ -143,5 +149,11 @@ void MainWindow::updateColorPreview(QColor color)
 
     QString colorString = color.name(QColor::HexArgb);
     ui->colorPreview->setStyleSheet(QString("background-color: %1;").arg(colorString));
+}
+
+
+void MainWindow::on_addFrameButton_clicked()
+{
+    emit frameAdded();
 }
 

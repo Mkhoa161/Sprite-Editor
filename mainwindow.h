@@ -24,10 +24,16 @@ signals:
     void toolSelected(Canvas::Mode mode);
     void setCurrentColor(int r, int g, int b, int a);
     void setCurrentColorHex(QString hex);
+    void frameAdded();
 
 private slots:
     void emitColorChange();
     void emitHexChange();
+
+    void on_addFrameButton_clicked();
+
+public slots:
+    void testSlot(Frame* frame);
 
 private:
     Ui::MainWindow *ui;

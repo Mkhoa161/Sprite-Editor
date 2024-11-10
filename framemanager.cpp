@@ -5,7 +5,6 @@
 
 FrameManager::FrameManager(int sideLength, int pixelSize, int fps, QObject *parent)
     : selectedFrameIndex(-1), sideLength(sideLength), pixelSize(pixelSize), fps(fps), QObject{parent} {
-    addFrame();
 }
 
 void FrameManager::setSideLength(int length) {
@@ -17,14 +16,13 @@ void FrameManager::setSideLength(int length) {
 
 void FrameManager::selectFrame(int frameIndex) {
     if (frameIndex >= 0 && frameIndex < int(frames.size())) {
-
         selectedFrameIndex = frameIndex;
         emit selectedFrameChanged(getSelectedFrame());
-        qDebug() << "selectedFrameChanged signal has been emitted";
     }
 }
 
-void FrameManager::addFrame() {
+void FrameManager::onFrameAdded() {
+    qDebug() << "onFrameAdded slot exec";
     Frame* newFrame = new Frame(sideLength, pixelSize);
 
     // Add the newly created Frame object to the vector

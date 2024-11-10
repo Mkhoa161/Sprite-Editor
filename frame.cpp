@@ -17,6 +17,8 @@ Frame::Frame(int sideLength, int pixelSize){
 
     this->sideLength = sideLength;
     this->pixelSize = pixelSize;
+
+    qDebug() << "frame ctor called";
 }
 
 Frame::Frame(const Frame& other){
@@ -91,10 +93,14 @@ void Frame::resizePixmap(int newSideLength, int newPixelSize){
 }
 
 void Frame::updatePixmap(QPoint pixelPos, QColor color){
+    if(!&pixmap){
+        return;
+    }
+
     QPainter painter(&pixmap);
 
     painter.fillRect(pixelPos.x(), pixelPos.y(), pixelSize, pixelSize, color);
 
     QString formattedJsonStr = QString::fromUtf8(QJsonDocument(ConvertToJson()).toJson(QJsonDocument::Indented)).replace("\n", "").replace("    ", " ");
-    //qDebug() << formattedJsonStr;
+    qDebug() << formattedJsonStr;
 }
