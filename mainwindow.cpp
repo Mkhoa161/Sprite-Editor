@@ -84,7 +84,7 @@ MainWindow::MainWindow(FrameManager& frameManager, QWidget *parent)
         ui->spinBox_alpha->setValue(defaultColor.alpha());
     });
 
-    connect(ui->canvas, &Canvas::paint, &frameManager, &FrameManager::paintCurrentFrame);
+    connect(ui->canvas, &Canvas::paint, &frameManager, &FrameManager::onPainted);
     connect(&frameManager, &FrameManager::selectedFrameChanged, ui->canvas, &Canvas::onSelectedFrameChanged);
 }
 

@@ -8,10 +8,15 @@
 #include <QPainter>
 #include <QtSwap>
 
+#include <QDebug>
+#include <QString>
+
 Frame::Frame(int sideLength, int pixelSize){
     pixmap = QPixmap(sideLength, sideLength);
-
     pixmap.fill(Qt::transparent);
+
+    this->sideLength = sideLength;
+    this->pixelSize = pixelSize;
 }
 
 Frame::Frame(const Frame& other){
@@ -79,7 +84,7 @@ void Frame::LoadFromJson(QJsonObject json){
 void Frame::resizePixmap(int newSideLength, int newPixelSize){
     sideLength = newSideLength;
     pixelSize = newPixelSize;
-    int newResolution = newSideLength * newPixelSize;
+    int newResolution = newSideLength;
 
     QPainter painter(&pixmap);
     painter.drawPixmap(0, 0, pixmap.scaled(newResolution, newResolution, Qt::IgnoreAspectRatio));
@@ -88,5 +93,8 @@ void Frame::resizePixmap(int newSideLength, int newPixelSize){
 void Frame::updatePixmap(QPoint pixelPos, QColor color){
     QPainter painter(&pixmap);
 
-    painter.fillRect(pixelPos.x() * pixelSize, pixelPos.y() * pixelSize, pixelSize, pixelSize, color);
+    painter.fillRect(pixelPos.x(), pixelPos.y(), pixelSize, pixelSize, color);
+
+    QString formattedJsonStr = QString::fromUtf8(QJsonDocument(ConvertToJson()).toJson(QJsonDocument::Indented)).replace("\n", "").replace("    ", " ");
+    //qDebug() << formattedJsonStr;
 }

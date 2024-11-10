@@ -35,7 +35,13 @@ void Canvas::selectTool(Mode mode)
 void Canvas::setCurrentColor(int r, int g, int b, int a)
 {
     selectedColor = QColor(r, g, b, a);
-    qDebug() << "Color changed. r: " << r << "g: " << g << "b: " << b << "a: " << a;
+    //qDebug() << "Color changed. r: " << r << "g: " << g << "b: " << b << "a: " << a;
+}
+
+void Canvas::onSelectedFrameChanged(Frame *newSelectedFrame){
+    qDebug() << "1111111111111111111111111111111111111111111111111111111111111111111";
+    qDebug() << "calling onSelectedFrameChanged, recevied: " << (newSelectedFrame == nullptr);
+    foregroundPixmap = &(newSelectedFrame->pixmap);
 }
 
 void Canvas::paintEvent(QPaintEvent *event) {
@@ -44,8 +50,10 @@ void Canvas::paintEvent(QPaintEvent *event) {
     QPainter painter(this);
     painter.drawPixmap(0, 0, backgroundPixmap);
 
+    //qDebug() << "Repaint: is foreground pixmap null? " << (bool)(foregroundPixmap == nullptr);
+
     if(foregroundPixmap != nullptr){
-        qDebug() << "repainted foreground pixmap in paint event";
+
         painter.drawPixmap(0, 0, *foregroundPixmap);
     }
 }
@@ -83,10 +91,6 @@ void Canvas::mouseReleaseEvent(QMouseEvent *event) {
     isPressingMouse = false;
 }
 
-// void Canvas::leaveEvent(QEvent *event){
-//     qDebug() << "Mouse leave canvas";
-// }
-
 QRect Canvas::getPixelRect(QPoint pixelPos){
     return QRect(pixelPos * pixelSize, QSize(pixelSize, pixelSize));
 }
@@ -104,8 +108,8 @@ void Canvas::paintCheckerBoard(){
     const int rows = height() / pixelSize;
     const int cols = width() / pixelSize;
 
-    qDebug() << "height " << height() << "rows " << rows;
-    qDebug() << "width " << width() << "cols " << cols;
+    // qDebug() << "height " << height() << "rows " << rows;
+    // qDebug() << "width " << width() << "cols " << cols;
 
     QColor black(117, 117, 117);
     QColor white(204, 204, 204);
@@ -119,9 +123,4 @@ void Canvas::paintCheckerBoard(){
             }
         }
     }
-}
-
-void Canvas::onSelectedFrameChanged(Frame *newSelectedFrame){
-    qDebug() << "calling onSelectedFrameChanged, recevied: " << (newSelectedFrame == nullptr);
-    foregroundPixmap = &(newSelectedFrame->pixmap);
 }

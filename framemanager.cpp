@@ -1,5 +1,7 @@
 #include "framemanager.h"
 #include <QDebug>
+#include <QJsonDocument>
+#include <QJsonObject>
 
 FrameManager::FrameManager(int sideLength, int pixelSize, int fps, QObject *parent)
     : selectedFrameIndex(-1), sideLength(sideLength), pixelSize(pixelSize), fps(fps), QObject{parent} {
@@ -15,9 +17,10 @@ void FrameManager::setSideLength(int length) {
 
 void FrameManager::selectFrame(int frameIndex) {
     if (frameIndex >= 0 && frameIndex < int(frames.size())) {
-        qDebug() << "Frame Manager selectFrame called";
+
         selectedFrameIndex = frameIndex;
         emit selectedFrameChanged(getSelectedFrame());
+        qDebug() << "selectedFrameChanged signal has been emitted";
     }
 }
 
@@ -69,6 +72,7 @@ std::vector<Frame*>& FrameManager::getFrames() {
     return frames;
 }
 
-void FrameManager::paintCurrentFrame(QPoint pixelPos, QColor color){
-    frames[selectedFrameIndex]->updatePixmap(pixelPos, color);
+void FrameManager::onPainted(QPoint pixelPos, QColor color){
+    getSelectedFrame()->updatePixmap(pixelPos, color);
+    qDebug() << "onPainted slots exec";
 }
