@@ -5,7 +5,8 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    MainWindow w;
+    FrameManager frameManager;
+    MainWindow w(frameManager);
 
     QString brightStyleSheet = "QWidget {"
                              "  background-color: #EEEEEE;"

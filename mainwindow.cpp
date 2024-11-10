@@ -2,7 +2,7 @@
 #include "ui_mainwindow.h"
 #include <QTimer>
 
-MainWindow::MainWindow(QWidget *parent)
+MainWindow::MainWindow(FrameManager& frameManager, QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
@@ -82,6 +82,8 @@ MainWindow::MainWindow(QWidget *parent)
         ui->spinBox_blue->setValue(defaultColor.blue());
         ui->spinBox_alpha->setValue(defaultColor.alpha());
     });
+
+    connect(ui->canvas, &Canvas::paint, &frameManager, &FrameManager::paintCurrentFrame);
 }
 
 MainWindow::~MainWindow()
