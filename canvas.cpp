@@ -17,10 +17,6 @@ Canvas::Canvas(QWidget *parent)
     isMirrorMode = false;
 
     backgroundPixmap = QPixmap(size());
-    foregroundPixmap = QPixmap(size());
-    foregroundPixmap.fill(Qt::transparent);
-
-    paintCheckerBoard();
 }
 
 Canvas::~Canvas()
@@ -37,7 +33,19 @@ void Canvas::selectTool(Mode mode)
 void Canvas::setCurrentColor(int r, int g, int b, int a)
 {
     selectedColor = QColor(r, g, b, a);
-    qDebug() << "Color changed. r: " << r << "g: " << g << "b: " << b << "a: " << a;
+    //qDebug() << "Color changed. r: " << r << "g: " << g << "b: " << b << "a: " << a;
+}
+
+void Canvas::onSelectedFrameChanged(Frame *newSelectedFrame){
+    foregroundPixmap = &(newSelectedFrame->pixmap);
+
+}
+
+void Canvas::onSideLengthChanged(int newSideLength){
+    sideLength = newSideLength;
+    pixelSize = width() / sideLength;
+
+    paintCheckerBoard();
 }
 
 void Canvas::paintEvent(QPaintEvent *event) {
@@ -45,54 +53,39 @@ void Canvas::paintEvent(QPaintEvent *event) {
 
     QPainter painter(this);
     painter.drawPixmap(0, 0, backgroundPixmap);
-    painter.drawPixmap(0, 0, foregroundPixmap);
+
+    if(foregroundPixmap != nullptr){
+        int scaledResolution = foregroundPixmap->height() * pixelSize;
+        painter.drawPixmap(0, 0, foregroundPixmap->scaled(scaledResolution, scaledResolution));
+    }
 }
 
 void Canvas::mouseMoveEvent(QMouseEvent *event){
     QPoint localPos = event->pos();
-
-    qDebug() << "Cursor position relative to Canvas:" << localPos;
 
     int col = localPos.x() / pixelSize;
     int row = localPos.y() / pixelSize;
 
     mousePixelPos = QPoint(col, row);
 
-    qDebug() << "Cursor pixel position:" << mousePixelPos;
-
     if(isPressingMouse && mousePixelPos != QPoint(-1, -1)) {
-        paint(mousePixelPos);
+        emit paint(mousePixelPos, selectedColor);
         repaint();
     }
 }
 
 void Canvas::mousePressEvent(QMouseEvent *event){
     isPressingMouse = true;
-    // mousePixelPos = convertWorldToPixel(event->pos());
+    mousePixelPos = convertWorldToPixel(event->pos());
 
-    // if(mousePixelPos != QPoint(-1, -1)){
-    //     paint(mousePixelPos);
-    //     repaint();
-    // }
+    if(mousePixelPos != QPoint(-1, -1)){
+        emit paint(mousePixelPos, selectedColor);
+        repaint();
+    }
 }
 
 void Canvas::mouseReleaseEvent(QMouseEvent *event) {
     isPressingMouse = false;
-}
-
-// void Canvas::leaveEvent(QEvent *event){
-//     qDebug() << "Mouse leave canvas";
-// }
-
-//Leaving this unimplemented so that the person in charge of paint functionality can implement
-void Canvas::paint(QPoint pixelPos){
-    // QPainter painter(&foregroundPixmap);
-
-    // painter.setPen(color);
-
-    // painter.fillRect(getPixelRect(pixelPos), color);
-
-    // qDebug() << "Rect drew";
 }
 
 QRect Canvas::getPixelRect(QPoint pixelPos){
@@ -109,17 +102,11 @@ QPoint Canvas::convertWorldToPixel(QPoint mousePos){
 void Canvas::paintCheckerBoard(){
     QPainter painter(&backgroundPixmap);
 
-    const int rows = height() / pixelSize;
-    const int cols = width() / pixelSize;
-
-    qDebug() << "height " << height() << "rows " << rows;
-    qDebug() << "width " << width() << "cols " << cols;
-
     QColor black(117, 117, 117);
     QColor white(204, 204, 204);
 
-    for (int row = 0; row < rows; ++row) {
-        for (int col = 0; col < cols; ++col) {
+    for (int row = 0; row < sideLength; ++row) {
+        for (int col = 0; col < sideLength; ++col) {
             if ((row + col) % 2 == 0) {
                 painter.fillRect(col * pixelSize, row * pixelSize, pixelSize, pixelSize, white);
             } else {

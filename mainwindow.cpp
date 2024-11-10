@@ -1,8 +1,9 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "framemanager.h"
 #include <QTimer>
 
-MainWindow::MainWindow(QWidget *parent)
+MainWindow::MainWindow(FrameManager& frameManager, QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
@@ -82,6 +83,18 @@ MainWindow::MainWindow(QWidget *parent)
         ui->spinBox_blue->setValue(defaultColor.blue());
         ui->spinBox_alpha->setValue(defaultColor.alpha());
     });
+
+    connect(ui->canvas, &Canvas::paint, &frameManager, &FrameManager::onPainted);
+    connect(&frameManager, &FrameManager::selectedFrameChanged, ui->canvas, &Canvas::onSelectedFrameChanged);
+    connect(this, &MainWindow::frameAdded, &frameManager, &FrameManager::onFrameAdded);
+    connect(&frameManager, &FrameManager::sideLengthChanged, ui->canvas, &Canvas::onSideLengthChanged);
+
+    frameManager.onFrameAdded();
+    frameManager.setSideLength(16);
+}
+
+void MainWindow::testSlot(Frame *frame){
+    qDebug() << "test slot exec";
 }
 
 MainWindow::~MainWindow()
@@ -139,5 +152,11 @@ void MainWindow::updateColorPreview(QColor color)
 
     QString colorString = color.name(QColor::HexArgb);
     ui->colorPreview->setStyleSheet(QString("background-color: %1;").arg(colorString));
+}
+
+
+void MainWindow::on_addFrameButton_clicked()
+{
+    emit frameAdded();
 }
 

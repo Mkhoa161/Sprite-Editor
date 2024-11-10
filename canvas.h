@@ -11,6 +11,7 @@
 #include <QPoint>
 #include <QRect>
 #include <QPainter>
+#include "frame.h"
 
 namespace Ui {
 class Canvas;
@@ -39,12 +40,16 @@ public:
 
     ~Canvas();
 
-    void paint(QPoint pixelPos);
+signals:
+    void paint(QPoint pixelPos, QColor color);
 
 public slots:
     void selectTool(enum Mode newMode);
 
     void setCurrentColor(int r, int g, int b, int a);
+
+    void onSelectedFrameChanged(Frame* newSelectedFrame);
+    void onSideLengthChanged(int newSideLength);
 
 private:
     //Temp value, will change based on decided default canvas size
@@ -52,14 +57,16 @@ private:
 
     Ui::Canvas *ui;
 
+    int sideLength;
     int pixelSize;
+
     QPoint mousePixelPos;
     bool isPressingMouse;
 
     QColor selectedColor;
 
     QPixmap backgroundPixmap;
-    QPixmap foregroundPixmap;
+    QPixmap* foregroundPixmap;
 
     enum Mode currentMode = DEFAULT_MODE;
     bool isMirrorMode;
@@ -68,9 +75,6 @@ private:
     void mouseMoveEvent(QMouseEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
-
-    //Not sure if we'll end up needing this so I just commented it out for now
-    // void leaveEvent(QEvent *event) override;
 
     QRect getPixelRect(QPoint pixelPos);
 
