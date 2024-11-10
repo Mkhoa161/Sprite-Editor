@@ -49,6 +49,7 @@ public slots:
     void setCurrentColor(int r, int g, int b, int a);
 
     void onSelectedFrameChanged(Frame* newSelectedFrame);
+    void onSideLengthChanged(int newSideLength);
 
 private:
     //Temp value, will change based on decided default canvas size
@@ -56,6 +57,7 @@ private:
 
     Ui::Canvas *ui;
 
+    int sideLength;
     int pixelSize;
     QPoint mousePixelPos;
     bool isPressingMouse;

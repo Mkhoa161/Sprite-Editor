@@ -12,6 +12,8 @@ void FrameManager::setSideLength(int length) {
     for (Frame* frame : frames) {
         frame->resizePixmap(sideLength, pixelSize);
     }
+
+    emit sideLengthChanged(sideLength);
 }
 
 void FrameManager::selectFrame(int frameIndex) {

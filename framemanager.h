@@ -22,6 +22,7 @@ public:
 
 signals:
     void selectedFrameChanged(Frame* newSelectedFrame);
+    void sideLengthChanged(int newSideLength);
 
 public slots:
     void onPainted(QPoint pixelPos, QColor color);
