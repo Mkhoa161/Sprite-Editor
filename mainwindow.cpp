@@ -86,11 +86,11 @@ MainWindow::MainWindow(FrameManager& frameManager, QWidget *parent)
 
     connect(ui->canvas, &Canvas::paint, &frameManager, &FrameManager::onPainted);
     connect(&frameManager, &FrameManager::selectedFrameChanged, ui->canvas, &Canvas::onSelectedFrameChanged);
-    //connect(&frameManager, &FrameManager::selectedFrameChanged, this, &MainWindow::testSlot);
     connect(this, &MainWindow::frameAdded, &frameManager, &FrameManager::onFrameAdded);
     connect(&frameManager, &FrameManager::sideLengthChanged, ui->canvas, &Canvas::onSideLengthChanged);
 
-    frameManager.setSideLength(5);
+    frameManager.onFrameAdded();
+    frameManager.setSideLength(16);
 }
 
 void MainWindow::testSlot(Frame *frame){

@@ -9,14 +9,12 @@
 #include <QtSwap>
 
 #include <QDebug>
-#include <QString>
 
-Frame::Frame(int sideLength, int pixelSize){
+Frame::Frame(int sideLength){
     pixmap = QPixmap(sideLength, sideLength);
     pixmap.fill(Qt::transparent);
 
     this->sideLength = sideLength;
-    this->pixelSize = pixelSize;
 
     qDebug() << "frame ctor called";
 }
@@ -83,9 +81,8 @@ void Frame::LoadFromJson(QJsonObject json){
     pixmap = QPixmap::fromImage(image);
 }
 
-void Frame::resizePixmap(int newSideLength, int newPixelSize){
+void Frame::resizePixmap(int newSideLength){
     sideLength = newSideLength;
-    pixelSize = newPixelSize;
     int newResolution = newSideLength;
 
     QPainter painter(&pixmap);
@@ -99,8 +96,5 @@ void Frame::updatePixmap(QPoint pixelPos, QColor color){
 
     QPainter painter(&pixmap);
 
-    painter.fillRect(pixelPos.x(), pixelPos.y(), pixelSize, pixelSize, color);
-
-    QString formattedJsonStr = QString::fromUtf8(QJsonDocument(ConvertToJson()).toJson(QJsonDocument::Indented)).replace("\n", "").replace("    ", " ");
-    qDebug() << formattedJsonStr;
+    painter.fillRect(pixelPos.x(), pixelPos.y(), 1, 1, color);
 }

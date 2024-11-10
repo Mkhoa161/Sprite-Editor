@@ -60,19 +60,13 @@ void Canvas::paintEvent(QPaintEvent *event) {
     }
 }
 
-//    painter.drawPixmap(0, 0, pixmap.scaled(newResolution, newResolution, Qt::IgnoreAspectRatio));
-
 void Canvas::mouseMoveEvent(QMouseEvent *event){
     QPoint localPos = event->pos();
-
-    //qDebug() << "Cursor position relative to Canvas:" << localPos;
 
     int col = localPos.x() / pixelSize;
     int row = localPos.y() / pixelSize;
 
     mousePixelPos = QPoint(col, row);
-
-    //qDebug() << "Cursor pixel position:" << mousePixelPos;
 
     if(isPressingMouse && mousePixelPos != QPoint(-1, -1)) {
         emit paint(mousePixelPos, selectedColor);
@@ -85,8 +79,7 @@ void Canvas::mousePressEvent(QMouseEvent *event){
     mousePixelPos = convertWorldToPixel(event->pos());
 
     if(mousePixelPos != QPoint(-1, -1)){
-        emit paint(mousePixelPos, Qt::red);
-        qDebug() << "Painted at pixel: " << mousePixelPos << "with" << selectedColor;
+        emit paint(mousePixelPos, selectedColor);
         repaint();
     }
 }

@@ -59,6 +59,7 @@ private:
 
     int sideLength;
     int pixelSize;
+
     QPoint mousePixelPos;
     bool isPressingMouse;
 
@@ -74,9 +75,6 @@ private:
     void mouseMoveEvent(QMouseEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
-
-    //Not sure if we'll end up needing this so I just commented it out for now
-    // void leaveEvent(QEvent *event) override;
 
     QRect getPixelRect(QPoint pixelPos);
 

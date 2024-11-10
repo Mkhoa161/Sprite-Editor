@@ -3,14 +3,14 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
-FrameManager::FrameManager(int sideLength, int pixelSize, int fps, QObject *parent)
-    : selectedFrameIndex(-1), sideLength(sideLength), pixelSize(pixelSize), fps(fps), QObject{parent} {
+FrameManager::FrameManager(int sideLength, int fps, QObject *parent)
+    : selectedFrameIndex(-1), sideLength(sideLength), fps(fps), QObject{parent} {
 }
 
 void FrameManager::setSideLength(int length) {
     sideLength = length;
     for (Frame* frame : frames) {
-        frame->resizePixmap(sideLength, pixelSize);
+        frame->resizePixmap(sideLength);
     }
 
     emit sideLengthChanged(sideLength);
@@ -25,7 +25,7 @@ void FrameManager::selectFrame(int frameIndex) {
 
 void FrameManager::onFrameAdded() {
     qDebug() << "onFrameAdded slot exec";
-    Frame* newFrame = new Frame(sideLength, pixelSize);
+    Frame* newFrame = new Frame(sideLength);
 
     // Add the newly created Frame object to the vector
     frames.push_back(newFrame);

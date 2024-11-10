@@ -13,7 +13,7 @@ public:
     /// \brief Frame Create a Frame where the pixmaps of background and foregound are empty.
     /// \param sideLength The side length of the pixmaps.
     ///
-    Frame(int sideLength, int pixelSize);
+    Frame(int sideLength);
 
     ///
     /// \brief Frame Create a Frame by deep-copy from another Frame.
@@ -44,9 +44,8 @@ public:
     ///
     /// \brief resizePixmap Resize the pixmap according to the new side length of pixel size.
     /// \param newSideLength The new amount of canvas pixels on each axis.
-    /// \param pixelSize The new size of how many screen pixel represents a canvas pixel.
     ///
-    void resizePixmap(int newSideLength, int pixelSize);
+    void resizePixmap(int newSideLength);
 
     ///
     /// \brief updatePixmap Update the color of the pixmap at a specified canvas pixel position.
@@ -65,11 +64,6 @@ private:
     /// \brief sideLength The amount of canvas pixel on each axis.
     ///
     int sideLength;
-
-    ///
-    /// \brief pixelSize The size of how many screen pixel represents a canvas pixel.
-    ///
-    int pixelSize;
 };
 
 #endif // FRAME_H

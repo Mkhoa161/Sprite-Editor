@@ -11,7 +11,7 @@ class FrameManager : public QObject
 {
     Q_OBJECT
 public:
-    explicit FrameManager(int sideLength = 5, int pixelSize = 1, int fps = 30, QObject *parent = nullptr);
+    explicit FrameManager(int sideLength = 16, int fps = 30, QObject *parent = nullptr);
     void setSideLength(int length);
     void selectFrame(int frameIndex);
 
@@ -32,7 +32,6 @@ private:
     std::vector<Frame*> frames;
     int selectedFrameIndex;
     int sideLength;
-    int pixelSize;
     int fps;
 };
 
