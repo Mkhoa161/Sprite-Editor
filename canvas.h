@@ -39,7 +39,8 @@ public:
 
     ~Canvas();
 
-    void paint(QPoint pixelPos);
+signals:
+    void paint(QPoint pixelPos, QColor color);
 
 public slots:
     void selectTool(enum Mode newMode);

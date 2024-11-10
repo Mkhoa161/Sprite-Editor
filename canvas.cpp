@@ -61,7 +61,7 @@ void Canvas::mouseMoveEvent(QMouseEvent *event){
     qDebug() << "Cursor pixel position:" << mousePixelPos;
 
     if(isPressingMouse && mousePixelPos != QPoint(-1, -1)) {
-        paint(mousePixelPos);
+        emit paint(mousePixelPos, selectedColor);
         repaint();
     }
 }
@@ -83,17 +83,6 @@ void Canvas::mouseReleaseEvent(QMouseEvent *event) {
 // void Canvas::leaveEvent(QEvent *event){
 //     qDebug() << "Mouse leave canvas";
 // }
-
-//Leaving this unimplemented so that the person in charge of paint functionality can implement
-void Canvas::paint(QPoint pixelPos){
-    // QPainter painter(&foregroundPixmap);
-
-    // painter.setPen(color);
-
-    // painter.fillRect(getPixelRect(pixelPos), color);
-
-    // qDebug() << "Rect drew";
-}
 
 QRect Canvas::getPixelRect(QPoint pixelPos){
     return QRect(pixelPos * pixelSize, QSize(pixelSize, pixelSize));
