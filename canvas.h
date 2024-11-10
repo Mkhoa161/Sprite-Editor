@@ -42,6 +42,7 @@ public:
 
 signals:
     void paint(QPoint pixelPos, QColor color);
+    void erase(QPoint pixelPos);
 
 public slots:
     void selectTool(enum Mode newMode);
