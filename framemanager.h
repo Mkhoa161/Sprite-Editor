@@ -20,6 +20,9 @@ public:
     Frame* getSelectedFrame();
     std::vector<Frame*>& getFrames();
 
+signals:
+    void selectedFrameChanged(Frame* newSelectedFrame);
+
 public slots:
     void paintCurrentFrame(QPoint pixelPos, QColor color);
 

@@ -1,7 +1,9 @@
 #include "framemanager.h"
+#include <QDebug>
 
 FrameManager::FrameManager(int sideLength, int pixelSize, int fps, QObject *parent)
     : selectedFrameIndex(-1), sideLength(sideLength), pixelSize(pixelSize), fps(fps), QObject{parent} {
+    addFrame();
 }
 
 void FrameManager::setSideLength(int length) {
@@ -13,7 +15,9 @@ void FrameManager::setSideLength(int length) {
 
 void FrameManager::selectFrame(int frameIndex) {
     if (frameIndex >= 0 && frameIndex < int(frames.size())) {
+        qDebug() << "Frame Manager selectFrame called";
         selectedFrameIndex = frameIndex;
+        emit selectedFrameChanged(getSelectedFrame());
     }
 }
 
@@ -24,7 +28,7 @@ void FrameManager::addFrame() {
     frames.push_back(newFrame);
 
     if (selectedFrameIndex == -1) {
-        selectedFrameIndex = 0; // Select the first frame by default
+        selectFrame(0); // Select the first frame by default
     }
 }
 
@@ -33,7 +37,7 @@ void FrameManager::removeFrame(int frameIndex) {
         frames.erase(frames.begin() + frameIndex);
         // If the selected frame is removed, select the previous one or the first
         if (selectedFrameIndex >= int(frames.size())) {
-            selectedFrameIndex = frames.size() - 1;
+            selectFrame(frames.size() - 1);
         }
     }
 }

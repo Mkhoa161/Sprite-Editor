@@ -11,6 +11,7 @@
 #include <QPoint>
 #include <QRect>
 #include <QPainter>
+#include "frame.h"
 
 namespace Ui {
 class Canvas;
@@ -47,6 +48,8 @@ public slots:
 
     void setCurrentColor(int r, int g, int b, int a);
 
+    void onSelectedFrameChanged(Frame* newSelectedFrame);
+
 private:
     //Temp value, will change based on decided default canvas size
     const int DEFAULT_PIXEL_SIZE = 50;
@@ -60,7 +63,7 @@ private:
     QColor selectedColor;
 
     QPixmap backgroundPixmap;
-    QPixmap foregroundPixmap;
+    QPixmap* foregroundPixmap;
 
     enum Mode currentMode = DEFAULT_MODE;
     bool isMirrorMode;

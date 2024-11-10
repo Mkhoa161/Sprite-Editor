@@ -17,8 +17,6 @@ Canvas::Canvas(QWidget *parent)
     isMirrorMode = false;
 
     backgroundPixmap = QPixmap(size());
-    foregroundPixmap = QPixmap(size());
-    foregroundPixmap.fill(Qt::transparent);
 
     paintCheckerBoard();
 }
@@ -45,35 +43,40 @@ void Canvas::paintEvent(QPaintEvent *event) {
 
     QPainter painter(this);
     painter.drawPixmap(0, 0, backgroundPixmap);
-    painter.drawPixmap(0, 0, foregroundPixmap);
+
+    if(foregroundPixmap != nullptr){
+        qDebug() << "repainted foreground pixmap in paint event";
+        painter.drawPixmap(0, 0, *foregroundPixmap);
+    }
 }
 
 void Canvas::mouseMoveEvent(QMouseEvent *event){
     QPoint localPos = event->pos();
 
-    qDebug() << "Cursor position relative to Canvas:" << localPos;
+    //qDebug() << "Cursor position relative to Canvas:" << localPos;
 
     int col = localPos.x() / pixelSize;
     int row = localPos.y() / pixelSize;
 
     mousePixelPos = QPoint(col, row);
 
-    qDebug() << "Cursor pixel position:" << mousePixelPos;
+    //qDebug() << "Cursor pixel position:" << mousePixelPos;
 
     if(isPressingMouse && mousePixelPos != QPoint(-1, -1)) {
-        emit paint(mousePixelPos, selectedColor);
+        emit paint(mousePixelPos, Qt::red);
         repaint();
     }
 }
 
 void Canvas::mousePressEvent(QMouseEvent *event){
     isPressingMouse = true;
-    // mousePixelPos = convertWorldToPixel(event->pos());
+    mousePixelPos = convertWorldToPixel(event->pos());
 
-    // if(mousePixelPos != QPoint(-1, -1)){
-    //     paint(mousePixelPos);
-    //     repaint();
-    // }
+    if(mousePixelPos != QPoint(-1, -1)){
+        emit paint(mousePixelPos, Qt::red);
+        qDebug() << "Painted at pixel: " << mousePixelPos << "with" << selectedColor;
+        repaint();
+    }
 }
 
 void Canvas::mouseReleaseEvent(QMouseEvent *event) {
@@ -116,4 +119,9 @@ void Canvas::paintCheckerBoard(){
             }
         }
     }
+}
+
+void Canvas::onSelectedFrameChanged(Frame *newSelectedFrame){
+    qDebug() << "calling onSelectedFrameChanged, recevied: " << (newSelectedFrame == nullptr);
+    foregroundPixmap = &(newSelectedFrame->pixmap);
 }
