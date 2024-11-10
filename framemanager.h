@@ -17,14 +17,14 @@ public:
     void addFrame();
     void removeFrame(int frameIndex);
     void setFrameIndex(int frameIndex, int newIndex);
-    const Frame& getSelectedFrame() const;
-    const std::vector<Frame>& getFrames() const;
+    Frame* getSelectedFrame();
+    std::vector<Frame*>& getFrames();
 
 public slots:
     void paintCurrentFrame(QPoint pixelPos, QColor color);
 
 private:
-    std::vector<Frame> frames;
+    std::vector<Frame*> frames;
     int selectedFrameIndex;
     int sideLength;
     int pixelSize;

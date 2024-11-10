@@ -6,8 +6,8 @@ FrameManager::FrameManager(int sideLength, int pixelSize, int fps, QObject *pare
 
 void FrameManager::setSideLength(int length) {
     sideLength = length;
-    for (Frame &frame : frames) {
-        frame.resizePixmap(sideLength, pixelSize);
+    for (Frame* frame : frames) {
+        frame->resizePixmap(sideLength, pixelSize);
     }
 }
 
@@ -18,7 +18,7 @@ void FrameManager::selectFrame(int frameIndex) {
 }
 
 void FrameManager::addFrame() {
-    Frame newFrame(sideLength, pixelSize);
+    Frame* newFrame = new Frame(sideLength, pixelSize);
 
     // Add the newly created Frame object to the vector
     frames.push_back(newFrame);
@@ -52,20 +52,19 @@ void FrameManager::setFrameIndex(int frameIndex, int newIndex) {
 }
 
 // Get the currently selected frame (const reference)
-const Frame& FrameManager::getSelectedFrame() const {
+Frame* FrameManager::getSelectedFrame() {
     if (selectedFrameIndex >= 0 && selectedFrameIndex < int(frames.size())) {
         return frames[selectedFrameIndex];
     }
 
     // Return a reference to an empty frame if none is selected (you can handle this as needed)
-    static Frame emptyFrame(sideLength, pixelSize);
-    return emptyFrame;
+    return nullptr;
 }
 
-const std::vector<Frame>& FrameManager::getFrames() const {
+std::vector<Frame*>& FrameManager::getFrames() {
     return frames;
 }
 
 void FrameManager::paintCurrentFrame(QPoint pixelPos, QColor color){
-    frames[selectedFrameIndex].updatePixmap(pixelPos, color);
+    frames[selectedFrameIndex]->updatePixmap(pixelPos, color);
 }
