@@ -11,6 +11,7 @@
 #include <QPoint>
 #include <QRect>
 #include <QPainter>
+#include <vector>
 #include "frame.h"
 
 namespace Ui {
@@ -83,7 +84,11 @@ private:
 
     QPoint convertWorldToPixel(QPoint mousePos);
 
+    void paintPixels();
+
     void paintCheckerBoard();
+
+    std::vector<QPoint> mirrorPixels(std::vector<QPoint> pixelPositions);
 
 };
 
