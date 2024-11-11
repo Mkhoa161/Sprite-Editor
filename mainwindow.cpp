@@ -38,6 +38,13 @@ MainWindow::MainWindow(FrameManager& frameManager, QWidget *parent)
                 ui->eraserButton->setChecked(true);
             });
 
+    // Turning on or off mirror mode
+    connect(ui->actionMirror,
+            &QAction::toggled,
+            ui->canvas,
+            &Canvas::setMirrorMode);
+
+
     connect(this, &MainWindow::toolSelected, ui->canvas, &Canvas::selectTool);
 
     // Changes modes of the selected tool in canvas

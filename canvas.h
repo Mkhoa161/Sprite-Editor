@@ -49,6 +49,8 @@ public slots:
 
     void setCurrentColor(int r, int g, int b, int a);
 
+    void setMirrorMode(bool enabled);
+
     void onSelectedFrameChanged(Frame* newSelectedFrame);
     void onSideLengthChanged(int newSideLength);
 

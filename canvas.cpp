@@ -30,6 +30,11 @@ void Canvas::selectTool(Mode mode)
     qDebug() << "selected mode" << mode;
 }
 
+void Canvas::setMirrorMode(bool enabled) {
+    isMirrorMode = enabled;
+    qDebug() << "Mirror Mode Enabled: " << isMirrorMode;
+}
+
 void Canvas::setCurrentColor(int r, int g, int b, int a)
 {
     selectedColor = QColor(r, g, b, a);
