@@ -69,17 +69,38 @@ void Canvas::mouseMoveEvent(QMouseEvent *event){
     mousePixelPos = QPoint(col, row);
 
     if(isPressingMouse && mousePixelPos != QPoint(-1, -1)) {
-        emit paint(mousePixelPos, selectedColor);
+        QColor color;
+
+        if(currentMode == Mode::BRUSH){
+            color = selectedColor;
+        }
+        else if(currentMode == Mode::ERASER){
+            color = Qt::transparent;
+        }
+
+        emit paint(mousePixelPos, color);
+
         repaint();
     }
 }
 
 void Canvas::mousePressEvent(QMouseEvent *event){
+    qDebug() << currentMode;
     isPressingMouse = true;
     mousePixelPos = convertWorldToPixel(event->pos());
 
     if(mousePixelPos != QPoint(-1, -1)){
-        emit paint(mousePixelPos, selectedColor);
+        QColor color;
+
+        if(currentMode == Mode::BRUSH){
+            color = selectedColor;
+        }
+        else if(currentMode == Mode::ERASER){
+            color = Qt::transparent;
+        }
+
+        emit paint(mousePixelPos, color);
+
         repaint();
     }
 }

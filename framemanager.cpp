@@ -81,7 +81,6 @@ std::vector<Frame*>& FrameManager::getFrames() {
 
 void FrameManager::onPainted(QPoint pixelPos, QColor color){
     getSelectedFrame()->updatePixmap(pixelPos, color);
-
     emit framesChanged(getFrames());
 }
 
