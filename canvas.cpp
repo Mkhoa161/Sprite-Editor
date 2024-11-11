@@ -38,7 +38,7 @@ void Canvas::setCurrentColor(int r, int g, int b, int a)
 
 void Canvas::onSelectedFrameChanged(Frame *newSelectedFrame){
     foregroundPixmap = &(newSelectedFrame->pixmap);
-    //repaint();
+    repaint();
 }
 
 void Canvas::onSideLengthChanged(int newSideLength){
