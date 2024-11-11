@@ -21,6 +21,7 @@ void FrameManager::selectFrame(int frameIndex) {
         selectedFrameIndex = frameIndex;
         emit selectedFrameChanged(getSelectedFrame());
     }
+    emit selectFrameSignal(selectedFrameIndex);
 }
 
 void FrameManager::onFrameAdded() {
@@ -33,6 +34,11 @@ void FrameManager::onFrameAdded() {
     if (selectedFrameIndex == -1) {
         selectFrame(0); // Select the first frame by default
     }
+
+    emit frameCountChanged(frames.size());
+    emit framesChanged(getFrames());
+
+    selectFrame(frames.size() - 1);
 }
 
 void FrameManager::removeFrame(int frameIndex) {
@@ -43,6 +49,7 @@ void FrameManager::removeFrame(int frameIndex) {
             selectFrame(frames.size() - 1);
         }
     }
+    emit frameCountChanged(frames.size());
 }
 
 void FrameManager::setFrameIndex(int frameIndex, int newIndex) {
@@ -74,4 +81,9 @@ std::vector<Frame*>& FrameManager::getFrames() {
 
 void FrameManager::onPainted(QPoint pixelPos, QColor color){
     getSelectedFrame()->updatePixmap(pixelPos, color);
+    emit framesChanged(getFrames());
+}
+
+void FrameManager::onFrameSelect(int frameIndex){
+    selectFrame(frameIndex);
 }

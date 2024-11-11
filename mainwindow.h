@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QButtonGroup>
+#include <QLabel>
 #include "canvas.h"
 #include "framemanager.h"
 
@@ -25,19 +26,30 @@ signals:
     void setCurrentColor(int r, int g, int b, int a);
     void setCurrentColorHex(QString hex);
     void frameAdded();
+    void frameSelect(int frameIndex);
 
 private slots:
     void emitColorChange();
     void emitHexChange();
-
     void on_addFrameButton_clicked();
-
-public slots:
-    void testSlot(Frame* frame);
+    void frameCountChanged(int newFrameCount);
+    void updateFramePreviews(const std::vector<Frame*>& frames);
+    void onSelectFrame(int index);
 
 private:
     Ui::MainWindow *ui;
+    // set to allow exclusive selection between those tools
     QButtonGroup* toolButtonGroup;
+    // used to keep track of which frame is selected and has a "frame" that we should make invisible later
+    int selectedFrameIndex = -1;
+    // Lables that are inside frame previews
+    QList<QLabel*> frameLabels;
+
+    // \brief A click selector that adds to frames
+    bool eventFilter(QObject *obj, QEvent *event) override;
+
     void updateColorPreview(QColor color);
+
+    void createFramePreview(const QPixmap& pixmap);
 };
 #endif // MAINWINDOW_H
