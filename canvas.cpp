@@ -17,10 +17,9 @@ Canvas::Canvas(QWidget *parent)
     pixelSize = DEFAULT_PIXEL_SIZE;
     selectedColor = DEFAULT_COLOR;
     currentMode = DEFAULT_MODE;
+
     isMirrorMode = false;
-
     isShapeMode = false;
-
 
     backgroundPixmap = QPixmap(size());
 }
@@ -70,6 +69,10 @@ void Canvas::setCurrentColor(int r, int g, int b, int a){
 
 void Canvas::onSelectedFrameChanged(Frame *newSelectedFrame){
     foregroundPixmap = &(newSelectedFrame->pixmap);
+
+    paintedPixels.clear();
+    paintedColors.clear();
+
     repaint();
 }
 
@@ -157,6 +160,7 @@ void Canvas::paintPixels() {
     }
 
     if(currentMode == Mode::SQUARE){
+
         for(QPoint shapePixel : shapePixels) {
             emit paint(shapePixel, Qt::transparent);
         }
@@ -617,8 +621,6 @@ void Canvas::mouseReleaseEvent(QMouseEvent *event) {
 
     if(isShapeMode){
         paintPixels();
-        paintedPixels.clear();
-        paintedColors.clear();
     }
 }
 
