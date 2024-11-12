@@ -5,6 +5,8 @@
 
 FrameManager::FrameManager(int sideLength, int fps, QObject *parent)
     : selectedFrameIndex(-1), sideLength(sideLength), fps(fps), QObject{parent} {
+    connect(&animationTimer, &QTimer::timeout, this, &FrameManager::updatePreview);
+    animationTimer.start(1000 / fps);
 }
 
 void FrameManager::onSetSideLength(int length) {
@@ -21,6 +23,7 @@ void FrameManager::selectFrame(int frameIndex) {
         selectedFrameIndex = frameIndex;
         emit selectedFrameChanged(getSelectedFrame());
     }
+    emit selectFrameSignal(selectedFrameIndex);
 }
 
 void FrameManager::onFrameAdded() {
@@ -33,6 +36,11 @@ void FrameManager::onFrameAdded() {
     if (selectedFrameIndex == -1) {
         selectFrame(0); // Select the first frame by default
     }
+
+    emit frameCountChanged(frames.size());
+    emit framesChanged(getFrames());
+
+    selectFrame(frames.size() - 1);
 }
 
 void FrameManager::removeFrame(int frameIndex) {
@@ -43,6 +51,7 @@ void FrameManager::removeFrame(int frameIndex) {
             selectFrame(frames.size() - 1);
         }
     }
+    emit frameCountChanged(frames.size());
 }
 
 void FrameManager::setFrameIndex(int frameIndex, int newIndex) {
@@ -74,5 +83,27 @@ std::vector<Frame*>& FrameManager::getFrames() {
 
 void FrameManager::onPainted(QPoint pixelPos, QColor color){
     getSelectedFrame()->updatePixmap(pixelPos, color);
-    qDebug() << "onPainted slots exec";
+    emit framesChanged(getFrames());
+}
+
+void FrameManager::onFrameSelect(int frameIndex){
+    selectFrame(frameIndex);
+}
+
+void FrameManager::fpsUpdated(int newFps)
+{
+    fps = newFps;
+    if (fps > 0) {
+        animationTimer.setInterval(1000 / fps);
+        animationTimer.start();
+    } else {
+        animationTimer.stop();
+    }
+}
+
+void FrameManager::updatePreview() {
+    if (!frames.empty()) {
+        emit updateAnimationPreview(*frames[animFrameIndex]);
+        animFrameIndex = (animFrameIndex + 1) % frames.size();
+    }
 }

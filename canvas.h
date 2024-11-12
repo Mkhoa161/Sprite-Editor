@@ -11,6 +11,7 @@
 #include <QPoint>
 #include <QRect>
 #include <QPainter>
+#include <vector>
 #include "frame.h"
 
 namespace Ui {
@@ -42,11 +43,14 @@ public:
 
 signals:
     void paint(QPoint pixelPos, QColor color);
+    void erase(QPoint pixelPos);
 
 public slots:
     void selectTool(enum Mode newMode);
 
     void setCurrentColor(int r, int g, int b, int a);
+
+    void setMirrorMode(bool enabled);
 
     void onSelectedFrameChanged(Frame* newSelectedFrame);
     void onSideLengthChanged(int newSideLength);
@@ -80,7 +84,11 @@ private:
 
     QPoint convertWorldToPixel(QPoint mousePos);
 
+    void paintPixels();
+
     void paintCheckerBoard();
+
+    std::vector<QPoint> mirrorPixels(std::vector<QPoint> pixelPositions);
 
 };
 

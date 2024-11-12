@@ -4,6 +4,9 @@
 #include <QMouseEvent>
 #include <QPainter>
 #include <QPen>
+#include <vector>
+
+using std::vector;
 
 Canvas::Canvas(QWidget *parent)
     : QWidget(parent)
@@ -30,6 +33,11 @@ void Canvas::selectTool(Mode mode)
     qDebug() << "selected mode" << mode;
 }
 
+void Canvas::setMirrorMode(bool enabled) {
+    isMirrorMode = enabled;
+    qDebug() << "Mirror Mode Enabled: " << isMirrorMode;
+}
+
 void Canvas::setCurrentColor(int r, int g, int b, int a)
 {
     selectedColor = QColor(r, g, b, a);
@@ -38,7 +46,7 @@ void Canvas::setCurrentColor(int r, int g, int b, int a)
 
 void Canvas::onSelectedFrameChanged(Frame *newSelectedFrame){
     foregroundPixmap = &(newSelectedFrame->pixmap);
-
+    repaint();
 }
 
 void Canvas::onSideLengthChanged(int newSideLength){
@@ -59,6 +67,38 @@ void Canvas::paintEvent(QPaintEvent *event) {
     }
 }
 
+void Canvas::paintPixels() {
+    QColor color;
+    if(currentMode == Mode::ERASER) {
+        color = Qt::transparent;
+    }
+    else {
+        color = selectedColor;
+    }
+    vector<QPoint> paintedPixels;
+    //This will be changed once paint is expanded to include shape tools
+    paintedPixels.push_back(QPoint(mousePixelPos));
+
+    for(QPoint pixel : paintedPixels) emit paint(pixel, color);
+
+    if(isMirrorMode) {
+        vector<QPoint> mirroredPixels = mirrorPixels(paintedPixels);
+        for(QPoint pixel : mirroredPixels) emit paint(pixel, color);
+    }
+
+    repaint();
+}
+
+vector<QPoint> Canvas::mirrorPixels(vector<QPoint> pixelPositions) {
+    int newPosition;
+    vector<QPoint> mirroredPixels;
+    for(QPoint pixel : pixelPositions) {
+        newPosition = width() / pixelSize - pixel.x();
+        mirroredPixels.push_back(QPoint(newPosition, pixel.y()));
+    }
+    return mirroredPixels;
+}
+
 void Canvas::mouseMoveEvent(QMouseEvent *event){
     QPoint localPos = event->pos();
 
@@ -67,20 +107,15 @@ void Canvas::mouseMoveEvent(QMouseEvent *event){
 
     mousePixelPos = QPoint(col, row);
 
-    if(isPressingMouse && mousePixelPos != QPoint(-1, -1)) {
-        emit paint(mousePixelPos, selectedColor);
-        repaint();
-    }
+    if(isPressingMouse && mousePixelPos != QPoint(-1, -1)) paintPixels();
 }
 
 void Canvas::mousePressEvent(QMouseEvent *event){
+    qDebug() << currentMode;
     isPressingMouse = true;
     mousePixelPos = convertWorldToPixel(event->pos());
 
-    if(mousePixelPos != QPoint(-1, -1)){
-        emit paint(mousePixelPos, selectedColor);
-        repaint();
-    }
+    if(mousePixelPos != QPoint(-1, -1)) paintPixels();
 }
 
 void Canvas::mouseReleaseEvent(QMouseEvent *event) {

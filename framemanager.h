@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QPoint>
 #include <QColor>
+#include <QTimer>
 #include <vector>
 #include "frame.h"
 
@@ -23,17 +24,25 @@ public:
 signals:
     void selectedFrameChanged(Frame* newSelectedFrame);
     void sideLengthChanged(int newSideLength);
+    void framesChanged(const std::vector<Frame*>& frames);
+    void frameCountChanged(int newCount);
+    void selectFrameSignal(int frameIndex);
+    void updateAnimationPreview(const Frame& frame);
 
 public slots:
     void onPainted(QPoint pixelPos, QColor color);
+    void onFrameSelect(int frameIndex);
     void onFrameAdded();
     void onSetSideLength(int length);
-
+    void fpsUpdated(int newFps);
+    void updatePreview();
 private:
     std::vector<Frame*> frames;
     int selectedFrameIndex;
     int sideLength;
     int fps;
+    int animFrameIndex = 0;
+    QTimer animationTimer;
 };
 
 #endif // FRAMEMANAGER_H

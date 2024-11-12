@@ -9,10 +9,12 @@ MainWindow::MainWindow(FrameManager& frameManager, QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    ui->canvas->resize(400, 400);
+        canvasSizing = new CanvasSizing();
+    
+    frameLabels = ui->scrollAreaWidgetContents->findChildren<QLabel*>();
+    frameLabels[0]->installEventFilter(this);
 
-    canvasSizing = new CanvasSizing();
-
+    // Add actions to a group so that they're exclusive
     toolButtonGroup = new QButtonGroup(this);
     toolButtonGroup->addButton(ui->penButton, 0); // numbers depending on the enum
     toolButtonGroup->addButton(ui->eraserButton, 1);
@@ -23,17 +25,7 @@ MainWindow::MainWindow(FrameManager& frameManager, QWidget *parent)
     toolButtonGroup->addButton(ui->triangleShapeButton, 6);
     toolButtonGroup->addButton(ui->filledTriangleShapeButton, 7);
 
-    // TODO: if pen and eraser in the toolbar need not to be checkable, then delete
-    // count also the pen and eraser in the toolbar
-    //QToolButton* actionPenButton = qobject_cast<QToolButton*>(
-    //    ui->toolBar->widgetForAction(ui->actionPen));
-    //QToolButton* actionEraserButton = qobject_cast<QToolButton*>(
-    //    ui->toolBar->widgetForAction(ui->actionEraser));
-    //toolButtonGroup->addButton(actionPenButton, 0);
-    //toolButtonGroup->addButton(actionEraserButton, 1);
-
-    //toolButtonGroup->setExclusive(true);
-
+    // Pen and eraser in the toolbar(not checkable)
     connect(ui->actionPen,
             &QAction::triggered,
             this,
@@ -48,9 +40,16 @@ MainWindow::MainWindow(FrameManager& frameManager, QWidget *parent)
                 ui->eraserButton->setChecked(true);
             });
 
+    // Turning on or off mirror mode
+    connect(ui->actionMirror,
+            &QAction::toggled,
+            ui->canvas,
+            &Canvas::setMirrorMode);
+
+
     connect(this, &MainWindow::toolSelected, ui->canvas, &Canvas::selectTool);
 
-    //Changes modes of the selected tool in canvas
+    // Changes modes of the selected tool in canvas
     connect(toolButtonGroup,
             QOverload<QAbstractButton*, bool>::of(&QButtonGroup::buttonToggled),
             this,
@@ -61,7 +60,7 @@ MainWindow::MainWindow(FrameManager& frameManager, QWidget *parent)
                 }
             });
 
-    //Handle color changes
+    // Handle color changes
     connect(ui->spinBox_red, QOverload<int>::of(&QSpinBox::valueChanged), this, &MainWindow::emitColorChange);
     connect(ui->slider_red, &QSlider::valueChanged, this, &MainWindow::emitColorChange);
     connect(ui->spinBox_green, QOverload<int>::of(&QSpinBox::valueChanged), this, &MainWindow::emitColorChange);
@@ -73,7 +72,7 @@ MainWindow::MainWindow(FrameManager& frameManager, QWidget *parent)
     connect(ui->colorHex, &QTextEdit::textChanged, this, &MainWindow::emitHexChange);
     connect(this, &MainWindow::setCurrentColor, ui->canvas, &Canvas::setCurrentColor);
 
-    //The timer defers these calls until after the constructor so all the signals can be... signaled
+    // The timer defers these calls until after the constructor so all the signals can be... signaled
     QTimer::singleShot(0, this, [this]() {
         Canvas::Mode defaultMode = ui->canvas->DEFAULT_MODE;
         QColor defaultColor = ui->canvas->DEFAULT_COLOR;
@@ -85,23 +84,32 @@ MainWindow::MainWindow(FrameManager& frameManager, QWidget *parent)
         ui->spinBox_green->setValue(defaultColor.green());
         ui->spinBox_blue->setValue(defaultColor.blue());
         ui->spinBox_alpha->setValue(defaultColor.alpha());
+        ui->fpsSpinBox->setValue(5);
     });
 
     connect(ui->actionChange_Dimensions, &QAction::triggered, this, &MainWindow::OnChangeDimensionClicked);
     connect(canvasSizing, &CanvasSizing::applyClicked, ui->canvas, &Canvas::onSideLengthChanged);
     connect(canvasSizing, &CanvasSizing::applyClicked, &frameManager, &FrameManager::onSetSideLength);
 
+    // Pixel drawing
     connect(ui->canvas, &Canvas::paint, &frameManager, &FrameManager::onPainted);
     connect(&frameManager, &FrameManager::selectedFrameChanged, ui->canvas, &Canvas::onSelectedFrameChanged);
     connect(this, &MainWindow::frameAdded, &frameManager, &FrameManager::onFrameAdded);
     connect(&frameManager, &FrameManager::sideLengthChanged, ui->canvas, &Canvas::onSideLengthChanged);
 
+    // Frame previews
+    connect(&frameManager, &FrameManager::framesChanged, this, &MainWindow::updateFramePreviews);
+    connect(&frameManager, &FrameManager::frameCountChanged, this, &MainWindow::frameCountChanged);
+    connect(ui->frameSpinBox, &QSpinBox::valueChanged, &frameManager, &FrameManager::onFrameSelect);
+    connect(this, &MainWindow::frameSelect, &frameManager, &FrameManager::onFrameSelect);
+    connect(&frameManager, &FrameManager::selectFrameSignal, this, &MainWindow::onSelectFrame);
+
+    // Animation preview
+    connect(this, &MainWindow::fpsUpdated, &frameManager, &FrameManager::fpsUpdated);
+    connect(&frameManager, &FrameManager::updateAnimationPreview, this, &MainWindow::updateAnimationPreview);
+
     frameManager.onSetSideLength(16);
     frameManager.onFrameAdded();
-}
-
-void MainWindow::testSlot(Frame *frame){
-    qDebug() << "test slot exec";
 }
 
 MainWindow::~MainWindow()
@@ -156,7 +164,6 @@ void MainWindow::emitHexChange()
 
 void MainWindow::updateColorPreview(QColor color)
 {
-
     QString colorString = color.name(QColor::HexArgb);
     ui->colorPreview->setStyleSheet(QString("background-color: %1;").arg(colorString));
 }
@@ -165,6 +172,72 @@ void MainWindow::updateColorPreview(QColor color)
 void MainWindow::on_addFrameButton_clicked()
 {
     emit frameAdded();
+}
+
+void MainWindow::frameCountChanged(int newFrameCount){
+    ui->frameSlider->setMaximum(newFrameCount - 1);
+    ui->frameSpinBox->setMaximum(newFrameCount - 1);
+}
+
+void MainWindow::onSelectFrame(int index){
+    frameLabels[index]->setStyleSheet("QLabel { border: 2px solid #2196F3; }");
+    if (selectedFrameIndex >= 0 && selectedFrameIndex <= frameLabels.size() - 1){
+        frameLabels[selectedFrameIndex]->setStyleSheet("QLabel { border: 2px solid transparent; }");
+    }
+    selectedFrameIndex = index;
+}
+
+void MainWindow::updateFramePreviews(const std::vector<Frame*>& frames) {
+
+    QWidget* scrollContent = ui->scrollAreaWidgetContents;
+    QHBoxLayout* layout = qobject_cast<QHBoxLayout*>(scrollContent->layout());
+
+    for (size_t i = 0; i < frames.size(); ++i) {
+        QLabel* label;
+        if (i < frameLabels.size()) { // check & replace existing lables
+            label = frameLabels[i];
+        } else { // no exsiting lables, create new ones
+            label = new QLabel(scrollContent);
+            label->setFixedSize(80, 80);
+            label->installEventFilter(this);  // install click selector
+            layout->insertWidget(layout->count() - 1, label);
+        }
+        QPixmap scaledPixmap = frames[i]->pixmap.scaled(80, 80, Qt::KeepAspectRatio);
+        label->setPixmap(scaledPixmap);
+    }
+
+    // delete excessive frames
+    while (frameLabels.size() > frames.size()) {
+        QLabel* label = frameLabels.takeLast();
+        layout->removeWidget(label);
+        delete label;
+    }
+
+    //renew frameLabels for indexing
+    frameLabels = scrollContent->findChildren<QLabel*>();
+}
+
+void MainWindow::updateAnimationPreview(const Frame& frame)
+{
+    QPixmap scaledPixmap = frame.pixmap.scaled(80,80);
+    ui->AnimationPreview->setPixmap(scaledPixmap);
+}
+
+bool MainWindow::eventFilter(QObject *obj, QEvent *event) {
+    if (event->type() == QEvent::MouseButtonPress) {
+        QLabel* label = qobject_cast<QLabel*>(obj);
+        if (label && frameLabels.contains(label)) {
+            int clickedIndex = frameLabels.indexOf(label);
+            emit frameSelect(clickedIndex);
+            return true;
+        }
+    }
+    return QMainWindow::eventFilter(obj, event);
+}
+
+void MainWindow::on_fpsSpinBox_valueChanged(int fps)
+{
+    emit fpsUpdated(fps);
 }
 
 void MainWindow::OnChangeDimensionClicked(){
