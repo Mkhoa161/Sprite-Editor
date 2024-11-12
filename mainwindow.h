@@ -31,7 +31,11 @@ signals:
     void fpsUpdated(int fps);
 
 private slots:
+    // Top menu bar
     void onChangeDimensionClicked();
+    void onSaveClicked();
+    void onLoadClicked();
+
     void emitColorChange();
     void emitHexChange();
     void on_addFrameButton_clicked();

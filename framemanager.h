@@ -5,6 +5,7 @@
 #include <QPoint>
 #include <QColor>
 #include <QTimer>
+#include <QString>
 #include <vector>
 #include "frame.h"
 
@@ -36,6 +37,9 @@ public slots:
     void onSetSideLength(int length);
     void fpsUpdated(int newFps);
     void updatePreview();
+    void onSaveFile();
+    void onLoadFile();
+
 private:
     std::vector<Frame*> frames;
     int selectedFrameIndex;

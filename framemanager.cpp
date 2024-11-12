@@ -2,6 +2,7 @@
 #include <QDebug>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QFileDialog>
 
 FrameManager::FrameManager(int sideLength, int fps, QObject *parent)
     : selectedFrameIndex(-1), sideLength(sideLength), fps(fps), QObject{parent} {
@@ -106,4 +107,18 @@ void FrameManager::updatePreview() {
         emit updateAnimationPreview(*frames[animFrameIndex]);
         animFrameIndex = (animFrameIndex + 1) % frames.size();
     }
+}
+
+void FrameManager::onSaveFile(){
+    QString filePath = QFileDialog::getSaveFileName(
+        nullptr,
+        "Save File",
+        QDir::homePath(),
+        "Sprite Files (*.sprite);;All Files (*)");
+
+    // TODO:
+}
+
+void FrameManager::onLoadFile(){
+    // TODO:
 }
