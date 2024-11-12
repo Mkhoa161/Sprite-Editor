@@ -5,6 +5,8 @@
 
 FrameManager::FrameManager(int sideLength, int fps, QObject *parent)
     : selectedFrameIndex(-1), sideLength(sideLength), fps(fps), QObject{parent} {
+    connect(&animationTimer, &QTimer::timeout, this, &FrameManager::updatePreview);
+    animationTimer.start(1000 / fps);
 }
 
 void FrameManager::setSideLength(int length) {
@@ -86,4 +88,22 @@ void FrameManager::onPainted(QPoint pixelPos, QColor color){
 
 void FrameManager::onFrameSelect(int frameIndex){
     selectFrame(frameIndex);
+}
+
+void FrameManager::fpsUpdated(int newFps)
+{
+    fps = newFps;
+    if (fps > 0) {
+        animationTimer.setInterval(1000 / fps);
+        animationTimer.start();
+    } else {
+        animationTimer.stop();
+    }
+}
+
+void FrameManager::updatePreview() {
+    if (!frames.empty()) {
+        emit updateAnimationPreview(*frames[animFrameIndex]);
+        animFrameIndex = (animFrameIndex + 1) % frames.size();
+    }
 }
