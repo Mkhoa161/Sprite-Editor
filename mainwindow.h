@@ -6,6 +6,7 @@
 #include <QLabel>
 #include "canvas.h"
 #include "framemanager.h"
+#include "canvassizing.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -43,6 +44,8 @@ private:
     Ui::MainWindow *ui;
     // set to allow exclusive selection between those tools
     QButtonGroup* toolButtonGroup;
+    CanvasSizing* canvasSizing;
+
     // used to keep track of which frame is selected and has a "frame" that we should make invisible later
     int selectedFrameIndex = -1;
     // Lables that are inside frame previews
@@ -50,9 +53,7 @@ private:
 
     // \brief A click selector that adds to frames
     bool eventFilter(QObject *obj, QEvent *event) override;
-
+    
     void updateColorPreview(QColor color);
-
-    void createFramePreview(const QPixmap& pixmap);
 };
 #endif // MAINWINDOW_H

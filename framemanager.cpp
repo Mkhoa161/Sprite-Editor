@@ -9,7 +9,7 @@ FrameManager::FrameManager(int sideLength, int fps, QObject *parent)
     animationTimer.start(1000 / fps);
 }
 
-void FrameManager::setSideLength(int length) {
+void FrameManager::onSetSideLength(int length) {
     sideLength = length;
     for (Frame* frame : frames) {
         frame->resizePixmap(sideLength);

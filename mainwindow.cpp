@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "framemanager.h"
+#include "canvassizing.h"
 #include <QTimer>
 
 MainWindow::MainWindow(FrameManager& frameManager, QWidget *parent)
@@ -8,7 +9,8 @@ MainWindow::MainWindow(FrameManager& frameManager, QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
+        canvasSizing = new CanvasSizing();
+    
     frameLabels = ui->scrollAreaWidgetContents->findChildren<QLabel*>();
     frameLabels[0]->installEventFilter(this);
 
@@ -85,6 +87,10 @@ MainWindow::MainWindow(FrameManager& frameManager, QWidget *parent)
         ui->fpsSpinBox->setValue(5);
     });
 
+    connect(ui->actionChange_Dimensions, &QAction::triggered, this, &MainWindow::OnChangeDimensionClicked);
+    connect(canvasSizing, &CanvasSizing::applyClicked, ui->canvas, &Canvas::onSideLengthChanged);
+    connect(canvasSizing, &CanvasSizing::applyClicked, &frameManager, &FrameManager::onSetSideLength);
+
     // Pixel drawing
     connect(ui->canvas, &Canvas::paint, &frameManager, &FrameManager::onPainted);
     connect(&frameManager, &FrameManager::selectedFrameChanged, ui->canvas, &Canvas::onSelectedFrameChanged);
@@ -102,8 +108,8 @@ MainWindow::MainWindow(FrameManager& frameManager, QWidget *parent)
     connect(this, &MainWindow::fpsUpdated, &frameManager, &FrameManager::fpsUpdated);
     connect(&frameManager, &FrameManager::updateAnimationPreview, this, &MainWindow::updateAnimationPreview);
 
+    frameManager.onSetSideLength(16);
     frameManager.onFrameAdded();
-    frameManager.setSideLength(16);
 }
 
 MainWindow::~MainWindow()
@@ -234,3 +240,6 @@ void MainWindow::on_fpsSpinBox_valueChanged(int fps)
     emit fpsUpdated(fps);
 }
 
+void MainWindow::OnChangeDimensionClicked(){
+    canvasSizing->exec();
+}
