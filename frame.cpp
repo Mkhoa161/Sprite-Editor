@@ -92,3 +92,22 @@ void Frame::updatePixmap(QPoint pixelPos, QColor color){
     painter.setCompositionMode(QPainter::CompositionMode_Source);
     painter.fillRect(pixelPos.x(), pixelPos.y(), 1, 1, color);
 }
+
+void Frame::rotate(bool isClockwise){
+    QTransform transform;
+    transform.rotate(isClockwise ? 90 : -90);
+    pixmap = pixmap.transformed(transform);
+}
+
+void Frame::flip(bool isAlongXAxis){
+    QTransform transform;
+    if (isAlongXAxis) {
+        transform.scale(1, -1);
+        transform.translate(0, -pixmap.height());
+    } else {
+        transform.scale(-1, 1);
+        transform.translate(-pixmap.width(), 0);
+    }
+
+    pixmap = pixmap.transformed(transform);
+}

@@ -55,7 +55,15 @@ void FrameManager::removeFrame(int frameIndex) {
             selectFrame(frames.size() - 1);
         }
     }
-    emit frameCountChanged(frames.size());
+}
+
+void FrameManager::onFrameRemove(){
+    if (frames.size() != 1){
+        removeFrame(selectedFrameIndex);
+        emit frameCountChanged(frames.size());
+        emit selectedFrameChanged(getSelectedFrame());
+        emit framesChanged(getFrames());
+    }
 }
 
 void FrameManager::setFrameIndex(int frameIndex, int newIndex) {
@@ -119,7 +127,6 @@ void FrameManager::onSaveFile(){
         QDir::homePath(),
         "Sprite Files (*.sprite);;All Files (*)");
 
-
     QFile file(filePath);
     file.open(QIODevice::WriteOnly | QIODevice::Text);
 
@@ -161,8 +168,6 @@ void FrameManager::onLoadFile(){
         removeFrame(i);
     }
 
-    //if()
-
     QJsonObject jsonObj = QJsonDocument::fromJson(fileData).object();
 
     int importedSideLength = jsonObj["sideLength"].toInt();
@@ -177,4 +182,25 @@ void FrameManager::onLoadFile(){
 
     emit framesChanged(getFrames());
     emit fileLoaded();
+}
+
+void FrameManager::onRotateCW(){
+    getSelectedFrame()->rotate(true);
+    emit selectedFrameChanged(getSelectedFrame());
+    emit framesChanged(getFrames());
+}
+void FrameManager::onRotateCCW(){
+    getSelectedFrame()->rotate(false);
+    emit selectedFrameChanged(getSelectedFrame());
+    emit framesChanged(getFrames());
+}
+void FrameManager::onFlipAlongX(){
+    getSelectedFrame()->flip(true);
+    emit selectedFrameChanged(getSelectedFrame());
+    emit framesChanged(getFrames());
+}
+void FrameManager::onFlipAlongY(){
+    getSelectedFrame()->flip(false);
+    emit selectedFrameChanged(getSelectedFrame());
+    emit framesChanged(getFrames());
 }
