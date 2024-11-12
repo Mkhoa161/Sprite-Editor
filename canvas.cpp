@@ -617,6 +617,8 @@ void Canvas::mouseReleaseEvent(QMouseEvent *event) {
 
     if(isShapeMode){
         paintPixels();
+        paintedPixels.clear();
+        paintedColors.clear();
     }
 }
 
