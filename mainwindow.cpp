@@ -25,13 +25,15 @@ MainWindow::MainWindow(FrameManager& frameManager, QWidget *parent)
     toolButtonGroup->addButton(ui->triangleShapeButton, 6);
     toolButtonGroup->addButton(ui->filledTriangleShapeButton, 7);
 
+    //ui->penButton->
+    //ui->actionPen->setEnabled(false);
+
     // Pen and eraser in the toolbar(not checkable)
     connect(ui->actionPen,
             &QAction::triggered,
             this,
             [this]() {
                 ui->penButton->setChecked(true);
-                ui->actionPen->setEnabled(false);
             });
 
     connect(ui->actionEraser,
@@ -77,6 +79,22 @@ MainWindow::MainWindow(FrameManager& frameManager, QWidget *parent)
             [this](QAbstractButton* button, bool checked){
                 if (checked) {
                     int id = toolButtonGroup->id(button);
+
+                    // toolbar ui updates
+                    switch (id){
+                    case 0:
+                        ui->actionPen->setEnabled(false);
+                        ui->actionEraser->setEnabled(true);
+                        break;
+                    case 1:
+                        ui->actionPen->setEnabled(true);
+                        ui->actionEraser->setEnabled(false);
+                        break;
+                    default:
+                        ui->actionPen->setEnabled(true);
+                        ui->actionEraser->setEnabled(true);
+                    }
+
                     emit toolSelected(static_cast<Canvas::Mode>(id));
                 }
             });
@@ -205,9 +223,9 @@ void MainWindow::frameCountChanged(int newFrameCount){
 }
 
 void MainWindow::onSelectFrame(int index){
-    frameLabels[index]->setStyleSheet("QLabel { border: 2px solid #2196F3; }");
+    frameLabels[index]->setStyleSheet("QLabel { border: 1px solid #2196F3; }");
     if (selectedFrameIndex >= 0 && selectedFrameIndex <= frameLabels.size() - 1){
-        frameLabels[selectedFrameIndex]->setStyleSheet("QLabel { border: 2px solid transparent; }");
+        frameLabels[selectedFrameIndex]->setStyleSheet("QLabel { border: 1px solid #DEDEDE; }");
     }
     selectedFrameIndex = index;
 }
@@ -223,7 +241,7 @@ void MainWindow::updateFramePreviews(const std::vector<Frame*>& frames) {
             label = frameLabels[i];
         } else { // no exsiting lables, create new ones
             label = new QLabel(scrollContent);
-            label->setFixedSize(80, 80);
+            label->setFixedSize(82, 82);
             label->installEventFilter(this);  // install click selector
             layout->insertWidget(layout->count() - 1, label);
         }

@@ -316,6 +316,12 @@
            </property>
            <item>
             <widget class="QLabel" name="label">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>86</horstretch>
+               <verstretch>86</verstretch>
+              </sizepolicy>
+             </property>
              <property name="text">
               <string>Image Preview</string>
              </property>
