@@ -5,6 +5,8 @@
 #include <QPoint>
 #include <QColor>
 #include <QTimer>
+#include <QString>
+#include <QJsonDocument>
 #include <vector>
 #include "frame.h"
 
@@ -28,14 +30,23 @@ signals:
     void frameCountChanged(int newCount);
     void selectFrameSignal(int frameIndex);
     void updateAnimationPreview(const Frame& frame);
+    void fileLoaded();
 
 public slots:
     void onPainted(QPoint pixelPos, QColor color);
     void onFrameSelect(int frameIndex);
     void onFrameAdded();
+    void onFrameRemove();
     void onSetSideLength(int length);
     void fpsUpdated(int newFps);
     void updatePreview();
+    void onRotateCW();
+    void onRotateCCW();
+    void onFlipAlongX();
+    void onFlipAlongY();
+    void onSaveFile();
+    void onLoadFile();
+    
 private:
     std::vector<Frame*> frames;
     int selectedFrameIndex;

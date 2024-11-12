@@ -47,7 +47,7 @@
      <string>File</string>
     </property>
     <addaction name="actionSave"/>
-    <addaction name="actionOpen"/>
+    <addaction name="actionLoad"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -75,8 +75,8 @@
    <addaction name="actionMirror"/>
    <addaction name="actionCwRotate"/>
    <addaction name="actionCcwRotate"/>
-   <addaction name="actionFlipX"/>
-   <addaction name="actionFlipY"/>
+   <addaction name="actionFlipAlongY"/>
+   <addaction name="actionFlipAlongX"/>
   </widget>
   <widget class="QDockWidget" name="AnimationBar">
    <property name="minimumSize">
@@ -316,6 +316,12 @@
            </property>
            <item>
             <widget class="QLabel" name="label">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>86</horstretch>
+               <verstretch>86</verstretch>
+              </sizepolicy>
+             </property>
              <property name="text">
               <string>Image Preview</string>
              </property>
@@ -1503,32 +1509,32 @@ li.checked::marker { content: &quot;\2612&quot;; }
     <enum>QAction::MenuRole::TextHeuristicRole</enum>
    </property>
   </action>
-  <action name="actionFlipX">
+  <action name="actionFlipAlongY">
    <property name="icon">
     <iconset resource="resources.qrc">
      <normaloff>:/icons/resources/FlipX.png</normaloff>:/icons/resources/FlipX.png</iconset>
    </property>
    <property name="text">
-    <string>FlipX</string>
+    <string>FlipAlongY</string>
    </property>
    <property name="toolTip">
-    <string>FlipX</string>
+    <string>Flip Along Y</string>
    </property>
    <property name="menuRole">
     <enum>QAction::MenuRole::TextHeuristicRole</enum>
    </property>
   </action>
-  <action name="actionFlipY">
+  <action name="actionFlipAlongX">
    <property name="icon">
     <iconset resource="resources.qrc">
      <normaloff>:/icons/resources/FlipY.png</normaloff>
      <activeon>:/icons/resources/FlipY.png</activeon>:/icons/resources/FlipY.png</iconset>
    </property>
    <property name="text">
-    <string>FlipY</string>
+    <string>FlipAlongX</string>
    </property>
    <property name="toolTip">
-    <string>FlipY</string>
+    <string>Flip Along X</string>
    </property>
    <property name="menuRole">
     <enum>QAction::MenuRole::TextHeuristicRole</enum>
@@ -1569,9 +1575,9 @@ li.checked::marker { content: &quot;\2612&quot;; }
     <string>Save</string>
    </property>
   </action>
-  <action name="actionOpen">
+  <action name="actionLoad">
    <property name="text">
-    <string>Open</string>
+    <string>Load</string>
    </property>
   </action>
   <action name="actionChange_Dimensions">

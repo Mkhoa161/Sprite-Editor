@@ -93,7 +93,7 @@ vector<QPoint> Canvas::mirrorPixels(vector<QPoint> pixelPositions) {
     int newPosition;
     vector<QPoint> mirroredPixels;
     for(QPoint pixel : pixelPositions) {
-        newPosition = width() / pixelSize - pixel.x();
+        newPosition = width() / pixelSize - pixel.x() - 1;
         mirroredPixels.push_back(QPoint(newPosition, pixel.y()));
     }
     return mirroredPixels;

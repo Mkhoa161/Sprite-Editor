@@ -25,6 +25,9 @@ MainWindow::MainWindow(FrameManager& frameManager, QWidget *parent)
     toolButtonGroup->addButton(ui->triangleShapeButton, 6);
     toolButtonGroup->addButton(ui->filledTriangleShapeButton, 7);
 
+    //ui->penButton->
+    //ui->actionPen->setEnabled(false);
+
     // Pen and eraser in the toolbar(not checkable)
     connect(ui->actionPen,
             &QAction::triggered,
@@ -46,16 +49,52 @@ MainWindow::MainWindow(FrameManager& frameManager, QWidget *parent)
             ui->canvas,
             &Canvas::setMirrorMode);
 
+    // Transformations
+    connect(ui->actionCwRotate,
+            &QAction::triggered,
+            &frameManager,
+            &FrameManager::onRotateCW);
 
-    connect(this, &MainWindow::toolSelected, ui->canvas, &Canvas::selectTool);
+    connect(ui->actionCcwRotate,
+            &QAction::triggered,
+            &frameManager,
+            &FrameManager::onRotateCCW);
+
+    connect(ui->actionFlipAlongX,
+            &QAction::triggered,
+            &frameManager,
+            &FrameManager::onFlipAlongX);
+
+    connect(ui->actionFlipAlongY,
+            &QAction::triggered,
+            &frameManager,
+            &FrameManager::onFlipAlongY);
+
 
     // Changes modes of the selected tool in canvas
+    connect(this, &MainWindow::toolSelected, ui->canvas, &Canvas::selectTool);
     connect(toolButtonGroup,
             QOverload<QAbstractButton*, bool>::of(&QButtonGroup::buttonToggled),
             this,
             [this](QAbstractButton* button, bool checked){
                 if (checked) {
                     int id = toolButtonGroup->id(button);
+
+                    // toolbar ui updates
+                    switch (id){
+                    case 0:
+                        ui->actionPen->setEnabled(false);
+                        ui->actionEraser->setEnabled(true);
+                        break;
+                    case 1:
+                        ui->actionPen->setEnabled(true);
+                        ui->actionEraser->setEnabled(false);
+                        break;
+                    default:
+                        ui->actionPen->setEnabled(true);
+                        ui->actionEraser->setEnabled(true);
+                    }
+
                     emit toolSelected(static_cast<Canvas::Mode>(id));
                 }
             });
@@ -87,9 +126,20 @@ MainWindow::MainWindow(FrameManager& frameManager, QWidget *parent)
         ui->fpsSpinBox->setValue(5);
     });
 
+    // Save
+    connect(ui->actionSave, &QAction::triggered, &frameManager, &FrameManager::onSaveFile);
+
+    // Load
+    connect(ui->actionLoad, &QAction::triggered, &frameManager, &FrameManager::onLoadFile);
+    connect(&frameManager, &FrameManager::fileLoaded, this, &MainWindow::onFileLoaded);
+    
+    // Canvas Sizing
     connect(ui->actionChange_Dimensions, &QAction::triggered, this, &MainWindow::onChangeDimensionClicked);
     connect(canvasSizing, &CanvasSizing::applyClicked, ui->canvas, &Canvas::onSideLengthChanged);
     connect(canvasSizing, &CanvasSizing::applyClicked, &frameManager, &FrameManager::onSetSideLength);
+
+    // Frame remove
+    connect(ui->actionDeleteSelectedFrame, &QAction::triggered, &frameManager, &FrameManager::onFrameRemove);
 
     // Pixel drawing
     connect(ui->canvas, &Canvas::paint, &frameManager, &FrameManager::onPainted);
@@ -180,9 +230,9 @@ void MainWindow::frameCountChanged(int newFrameCount){
 }
 
 void MainWindow::onSelectFrame(int index){
-    frameLabels[index]->setStyleSheet("QLabel { border: 2px solid #2196F3; }");
+    frameLabels[index]->setStyleSheet("QLabel { border: 1px solid #2196F3; }");
     if (selectedFrameIndex >= 0 && selectedFrameIndex <= frameLabels.size() - 1){
-        frameLabels[selectedFrameIndex]->setStyleSheet("QLabel { border: 2px solid transparent; }");
+        frameLabels[selectedFrameIndex]->setStyleSheet("QLabel { border: 1px solid #DEDEDE; }");
     }
     selectedFrameIndex = index;
 }
@@ -198,7 +248,7 @@ void MainWindow::updateFramePreviews(const std::vector<Frame*>& frames) {
             label = frameLabels[i];
         } else { // no exsiting lables, create new ones
             label = new QLabel(scrollContent);
-            label->setFixedSize(80, 80);
+            label->setFixedSize(82, 82);
             label->installEventFilter(this);  // install click selector
             layout->insertWidget(layout->count() - 1, label);
         }
@@ -242,4 +292,8 @@ void MainWindow::on_fpsSpinBox_valueChanged(int fps)
 
 void MainWindow::onChangeDimensionClicked(){
     canvasSizing->exec();
+}
+
+void MainWindow::onFileLoaded(){
+    ui->canvas->repaint();
 }
