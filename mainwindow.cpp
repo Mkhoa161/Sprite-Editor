@@ -31,6 +31,7 @@ MainWindow::MainWindow(FrameManager& frameManager, QWidget *parent)
             this,
             [this]() {
                 ui->penButton->setChecked(true);
+                ui->actionPen->setEnabled(false);
             });
 
     connect(ui->actionEraser,
@@ -46,10 +47,30 @@ MainWindow::MainWindow(FrameManager& frameManager, QWidget *parent)
             ui->canvas,
             &Canvas::setMirrorMode);
 
+    // Transformations
+    connect(ui->actionCwRotate,
+            &QAction::triggered,
+            &frameManager,
+            &FrameManager::onRotateCW);
 
-    connect(this, &MainWindow::toolSelected, ui->canvas, &Canvas::selectTool);
+    connect(ui->actionCcwRotate,
+            &QAction::triggered,
+            &frameManager,
+            &FrameManager::onRotateCCW);
+
+    connect(ui->actionFlipAlongX,
+            &QAction::triggered,
+            &frameManager,
+            &FrameManager::onFlipAlongX);
+
+    connect(ui->actionFlipAlongY,
+            &QAction::triggered,
+            &frameManager,
+            &FrameManager::onFlipAlongY);
+
 
     // Changes modes of the selected tool in canvas
+    connect(this, &MainWindow::toolSelected, ui->canvas, &Canvas::selectTool);
     connect(toolButtonGroup,
             QOverload<QAbstractButton*, bool>::of(&QButtonGroup::buttonToggled),
             this,
@@ -87,9 +108,13 @@ MainWindow::MainWindow(FrameManager& frameManager, QWidget *parent)
         ui->fpsSpinBox->setValue(5);
     });
 
+    // Canvas sizing
     connect(ui->actionChange_Dimensions, &QAction::triggered, this, &MainWindow::onChangeDimensionClicked);
     connect(canvasSizing, &CanvasSizing::applyClicked, ui->canvas, &Canvas::onSideLengthChanged);
     connect(canvasSizing, &CanvasSizing::applyClicked, &frameManager, &FrameManager::onSetSideLength);
+
+    // Frame remove
+    connect(ui->actionDeleteSelectedFrame, &QAction::triggered, &frameManager, &FrameManager::onFrameRemove);
 
     // Pixel drawing
     connect(ui->canvas, &Canvas::paint, &frameManager, &FrameManager::onPainted);

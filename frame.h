@@ -55,6 +55,18 @@ public:
     void updatePixmap(QPoint pixelPos, QColor color);
 
     ///
+    ///
+    ///
+    ///
+    void rotate(bool isClockwise);
+
+    ///
+    ///
+    ///
+    ///
+    void flip(bool isAlongXAxis);
+
+    ///
     /// \brief pixmap The QPixmap where the painting is stored. This will be what the user paints.
     ///
     QPixmap pixmap;
