@@ -51,7 +51,15 @@ void FrameManager::removeFrame(int frameIndex) {
             selectFrame(frames.size() - 1);
         }
     }
-    emit frameCountChanged(frames.size());
+}
+
+void FrameManager::onFrameRemove(){
+    if (frames.size() != 1){
+        removeFrame(selectedFrameIndex);
+        emit frameCountChanged(frames.size());
+        emit selectedFrameChanged(getSelectedFrame());
+        emit framesChanged(getFrames());
+    }
 }
 
 void FrameManager::setFrameIndex(int frameIndex, int newIndex) {
@@ -106,4 +114,25 @@ void FrameManager::updatePreview() {
         emit updateAnimationPreview(*frames[animFrameIndex]);
         animFrameIndex = (animFrameIndex + 1) % frames.size();
     }
+}
+
+void FrameManager::onRotateCW(){
+    getSelectedFrame()->rotate(true);
+    emit selectedFrameChanged(getSelectedFrame());
+    emit framesChanged(getFrames());
+}
+void FrameManager::onRotateCCW(){
+    getSelectedFrame()->rotate(false);
+    emit selectedFrameChanged(getSelectedFrame());
+    emit framesChanged(getFrames());
+}
+void FrameManager::onFlipAlongX(){
+    getSelectedFrame()->flip(true);
+    emit selectedFrameChanged(getSelectedFrame());
+    emit framesChanged(getFrames());
+}
+void FrameManager::onFlipAlongY(){
+    getSelectedFrame()->flip(false);
+    emit selectedFrameChanged(getSelectedFrame());
+    emit framesChanged(getFrames());
 }
