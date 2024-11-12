@@ -26,7 +26,7 @@ Frame& Frame::operator =(Frame other){
     return *this;
 }
 
-QJsonObject Frame::ConvertToJson(){
+QJsonObject Frame::convertToJson(){
     QImage image = pixmap.toImage();
 
     QJsonObject frame;
@@ -54,7 +54,7 @@ QJsonObject Frame::ConvertToJson(){
     return frame;
 }
 
-void Frame::LoadFromJson(QJsonObject json){
+void Frame::loadFromJson(QJsonObject json){
     QJsonArray pixelArray = json["pixels"].toArray();
     int sideLength = json["sideLength"].toInt();
 

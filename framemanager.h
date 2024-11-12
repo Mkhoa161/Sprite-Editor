@@ -6,6 +6,7 @@
 #include <QColor>
 #include <QTimer>
 #include <QString>
+#include <QJsonDocument>
 #include <vector>
 #include "frame.h"
 
@@ -47,6 +48,9 @@ private:
     int fps;
     int animFrameIndex = 0;
     QTimer animationTimer;
+
+    QJsonDocument convertFramesToJson();
+    void convertJsonToFrames(QJsonDocument jsonDocument);
 };
 
 #endif // FRAMEMANAGER_H

@@ -91,6 +91,7 @@ MainWindow::MainWindow(FrameManager& frameManager, QWidget *parent)
     connect(ui->actionSave, &QAction::triggered, &frameManager, &FrameManager::onSaveFile);
 
     // Load
+    connect(ui->actionLoad, &QAction::triggered, &frameManager, &FrameManager::onLoadFile);
 
     // Canvas sizing
     connect(ui->actionChange_Dimensions, &QAction::triggered, this, &MainWindow::onChangeDimensionClicked);

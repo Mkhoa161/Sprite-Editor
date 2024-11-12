@@ -1,8 +1,12 @@
 #include "framemanager.h"
 #include <QDebug>
 #include <QJsonDocument>
+#include <QJsonArray>
 #include <QJsonObject>
 #include <QFileDialog>
+#include <QIODevice>
+#include <QTextStream>
+#include <QByteArray>
 
 FrameManager::FrameManager(int sideLength, int fps, QObject *parent)
     : selectedFrameIndex(-1), sideLength(sideLength), fps(fps), QObject{parent} {
@@ -28,7 +32,6 @@ void FrameManager::selectFrame(int frameIndex) {
 }
 
 void FrameManager::onFrameAdded() {
-    qDebug() << "onFrameAdded slot exec";
     Frame* newFrame = new Frame(sideLength);
 
     // Add the newly created Frame object to the vector
@@ -116,9 +119,52 @@ void FrameManager::onSaveFile(){
         QDir::homePath(),
         "Sprite Files (*.sprite);;All Files (*)");
 
-    // TODO:
+
+    QFile file(filePath);
+    file.open(QIODevice::WriteOnly | QIODevice::Text);
+
+    QTextStream out(&file);
+    out << convertFramesToJson().toJson(QJsonDocument::Indented);
+
+    qDebug() << filePath;
+    file.close();
 }
 
 void FrameManager::onLoadFile(){
-    // TODO:
+    QString filePath = QFileDialog::getOpenFileName(
+        nullptr,
+        "Open File",
+        QDir::homePath(),
+        "Sprite Files (*.sprite)");
+
+    QFile file(filePath);
+    file.open(QIODevice::ReadOnly | QIODevice::Text);
+
+    QByteArray fileData = file.readAll();
+
+    file.close();
+
+    for(int i = frames.size(); i >= 0; i--){
+        removeFrame(i);
+    }
+
+    QJsonDocument jsonDocument = QJsonDocument::fromJson(fileData);
+    convertJsonToFrames(jsonDocument);
+}
+
+QJsonDocument FrameManager::convertFramesToJson(){
+    QJsonArray framesJsonArray;
+
+    for(Frame* frame : frames){
+        framesJsonArray.append(frame->convertToJson());
+    }
+
+    return QJsonDocument(framesJsonArray);
+}
+
+void FrameManager::convertJsonToFrames(QJsonDocument jsonDocument){
+    for(QJsonValue value : jsonDocument.array()){
+        onFrameAdded();
+        frames.back()->loadFromJson(value.toObject());
+    }
 }
