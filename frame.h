@@ -33,13 +33,13 @@ public:
     /// which stores each pixel data of this frame.
     /// \return A QJsonObject that holds the frame's Json data.
     ///
-    QJsonObject convertToJson();
+    QJsonArray convertToJson();
 
     ///
     /// \brief loadFromJson Using data from a QJsonObject to override the foregroundPixmap.
-    /// \param json A QJsonObject from where the data will be used to override.
+    /// \param json A QJsonValue from where the data will be used to override.
     ///
-    void loadFromJson(QJsonObject json);
+    void loadFromJson(QJsonValue json);
 
     ///
     /// \brief resizePixmap Resize the pixmap according to the new side length of pixel size.

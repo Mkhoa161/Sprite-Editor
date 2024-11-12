@@ -30,6 +30,7 @@ signals:
     void frameCountChanged(int newCount);
     void selectFrameSignal(int frameIndex);
     void updateAnimationPreview(const Frame& frame);
+    void fileLoaded();
 
 public slots:
     void onPainted(QPoint pixelPos, QColor color);
@@ -48,9 +49,6 @@ private:
     int fps;
     int animFrameIndex = 0;
     QTimer animationTimer;
-
-    QJsonDocument convertFramesToJson();
-    void convertJsonToFrames(QJsonDocument jsonDocument);
 };
 
 #endif // FRAMEMANAGER_H

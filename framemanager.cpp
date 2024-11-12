@@ -124,9 +124,18 @@ void FrameManager::onSaveFile(){
     file.open(QIODevice::WriteOnly | QIODevice::Text);
 
     QTextStream out(&file);
-    out << convertFramesToJson().toJson(QJsonDocument::Indented);
 
-    qDebug() << filePath;
+    QJsonArray framesJsonArray;
+    for(Frame* frame : frames){
+        framesJsonArray.append(frame->convertToJson());
+    }
+
+    QJsonObject finalJson;
+    finalJson["sideLength"] = sideLength;
+    finalJson["frames"] = framesJsonArray;
+
+    out << QJsonDocument(finalJson).toJson(QJsonDocument::Indented);
+
     file.close();
 }
 
@@ -136,6 +145,10 @@ void FrameManager::onLoadFile(){
         "Open File",
         QDir::homePath(),
         "Sprite Files (*.sprite)");
+
+    if(filePath.isEmpty()){
+        return;
+    }
 
     QFile file(filePath);
     file.open(QIODevice::ReadOnly | QIODevice::Text);
@@ -148,23 +161,20 @@ void FrameManager::onLoadFile(){
         removeFrame(i);
     }
 
-    QJsonDocument jsonDocument = QJsonDocument::fromJson(fileData);
-    convertJsonToFrames(jsonDocument);
-}
+    //if()
 
-QJsonDocument FrameManager::convertFramesToJson(){
-    QJsonArray framesJsonArray;
+    QJsonObject jsonObj = QJsonDocument::fromJson(fileData).object();
 
-    for(Frame* frame : frames){
-        framesJsonArray.append(frame->convertToJson());
+    int importedSideLength = jsonObj["sideLength"].toInt();
+    if(sideLength != importedSideLength){
+        onSetSideLength(importedSideLength);
     }
 
-    return QJsonDocument(framesJsonArray);
-}
-
-void FrameManager::convertJsonToFrames(QJsonDocument jsonDocument){
-    for(QJsonValue value : jsonDocument.array()){
+    for(QJsonValue value : jsonObj["frames"].toArray()){
         onFrameAdded();
-        frames.back()->loadFromJson(value.toObject());
+        frames.back()->loadFromJson(value);
     }
+
+    emit framesChanged(getFrames());
+    emit fileLoaded();
 }
