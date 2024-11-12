@@ -82,6 +82,7 @@ MainWindow::MainWindow(FrameManager& frameManager, QWidget *parent)
         ui->spinBox_green->setValue(defaultColor.green());
         ui->spinBox_blue->setValue(defaultColor.blue());
         ui->spinBox_alpha->setValue(defaultColor.alpha());
+        ui->fpsSpinBox->setValue(5);
     });
 
     // Pixel drawing
@@ -96,6 +97,10 @@ MainWindow::MainWindow(FrameManager& frameManager, QWidget *parent)
     connect(ui->frameSpinBox, &QSpinBox::valueChanged, &frameManager, &FrameManager::onFrameSelect);
     connect(this, &MainWindow::frameSelect, &frameManager, &FrameManager::onFrameSelect);
     connect(&frameManager, &FrameManager::selectFrameSignal, this, &MainWindow::onSelectFrame);
+
+    // Animation preview
+    connect(this, &MainWindow::fpsUpdated, &frameManager, &FrameManager::fpsUpdated);
+    connect(&frameManager, &FrameManager::updateAnimationPreview, this, &MainWindow::updateAnimationPreview);
 
     frameManager.onFrameAdded();
     frameManager.setSideLength(16);
@@ -206,6 +211,12 @@ void MainWindow::updateFramePreviews(const std::vector<Frame*>& frames) {
     frameLabels = scrollContent->findChildren<QLabel*>();
 }
 
+void MainWindow::updateAnimationPreview(const Frame& frame)
+{
+    QPixmap scaledPixmap = frame.pixmap.scaled(80,80);
+    ui->AnimationPreview->setPixmap(scaledPixmap);
+}
+
 bool MainWindow::eventFilter(QObject *obj, QEvent *event) {
     if (event->type() == QEvent::MouseButtonPress) {
         QLabel* label = qobject_cast<QLabel*>(obj);
@@ -217,3 +228,9 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event) {
     }
     return QMainWindow::eventFilter(obj, event);
 }
+
+void MainWindow::on_fpsSpinBox_valueChanged(int fps)
+{
+    emit fpsUpdated(fps);
+}
+

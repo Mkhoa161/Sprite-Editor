@@ -27,6 +27,7 @@ signals:
     void setCurrentColorHex(QString hex);
     void frameAdded();
     void frameSelect(int frameIndex);
+    void fpsUpdated(int fps);
 
 private slots:
     void emitColorChange();
@@ -34,7 +35,9 @@ private slots:
     void on_addFrameButton_clicked();
     void frameCountChanged(int newFrameCount);
     void updateFramePreviews(const std::vector<Frame*>& frames);
+    void updateAnimationPreview(const Frame& frame);
     void onSelectFrame(int index);
+    void on_fpsSpinBox_valueChanged(int fps);
 
 private:
     Ui::MainWindow *ui;
