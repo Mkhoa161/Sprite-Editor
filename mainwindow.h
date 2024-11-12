@@ -31,6 +31,7 @@ signals:
     void fpsUpdated(int fps);
 
 private slots:
+    void onChangeDimensionClicked();
     void emitColorChange();
     void emitHexChange();
     void on_addFrameButton_clicked();

@@ -9,7 +9,7 @@ MainWindow::MainWindow(FrameManager& frameManager, QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-        canvasSizing = new CanvasSizing();
+    canvasSizing = new CanvasSizing();
     
     frameLabels = ui->scrollAreaWidgetContents->findChildren<QLabel*>();
     frameLabels[0]->installEventFilter(this);
@@ -87,7 +87,7 @@ MainWindow::MainWindow(FrameManager& frameManager, QWidget *parent)
         ui->fpsSpinBox->setValue(5);
     });
 
-    connect(ui->actionChange_Dimensions, &QAction::triggered, this, &MainWindow::OnChangeDimensionClicked);
+    connect(ui->actionChange_Dimensions, &QAction::triggered, this, &MainWindow::onChangeDimensionClicked);
     connect(canvasSizing, &CanvasSizing::applyClicked, ui->canvas, &Canvas::onSideLengthChanged);
     connect(canvasSizing, &CanvasSizing::applyClicked, &frameManager, &FrameManager::onSetSideLength);
 
@@ -240,6 +240,6 @@ void MainWindow::on_fpsSpinBox_valueChanged(int fps)
     emit fpsUpdated(fps);
 }
 
-void MainWindow::OnChangeDimensionClicked(){
+void MainWindow::onChangeDimensionClicked(){
     canvasSizing->exec();
 }
