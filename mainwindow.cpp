@@ -47,6 +47,8 @@ MainWindow::MainWindow(FrameManager& frameManager, QWidget *parent)
 
     connect(this, &MainWindow::toolSelected, ui->canvas, &Canvas::selectTool);
 
+
+
     // Changes modes of the selected tool in canvas
     connect(toolButtonGroup,
             QOverload<QAbstractButton*, bool>::of(&QButtonGroup::buttonToggled),
