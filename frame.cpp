@@ -26,13 +26,10 @@ Frame& Frame::operator =(Frame other){
     return *this;
 }
 
-QJsonObject Frame::ConvertToJson(){
+QJsonArray Frame::convertToJson(){
     QImage image = pixmap.toImage();
 
-    QJsonObject frame;
-    frame["sideLength"] = image.height();
-
-    QJsonArray pixelArray;
+    QJsonArray pixelArrayJson;
 
     for(int y = 0; y < image.height(); y++){
         for(int x = 0; x < image.width(); x++){
@@ -44,19 +41,15 @@ QJsonObject Frame::ConvertToJson(){
             pixel["b"] = color.blue();
             pixel["a"] = color.alpha();
 
-            pixelArray.append(pixel);
+            pixelArrayJson.append(pixel);
         }
     }
 
-
-    frame["pixels"] = pixelArray;
-
-    return frame;
+    return pixelArrayJson;
 }
 
-void Frame::LoadFromJson(QJsonObject json){
-    QJsonArray pixelArray = json["pixels"].toArray();
-    int sideLength = json["sideLength"].toInt();
+void Frame::loadFromJson(QJsonValue json){
+    QJsonArray pixelArray = json.toArray();
 
     QImage image(sideLength, sideLength, QImage::Format_ARGB32);
 
@@ -72,10 +65,13 @@ void Frame::LoadFromJson(QJsonObject json){
 
             QColor color(r,g,b,a);
             image.setPixelColor(x, y, color);
+            index++;
         }
     }
 
-    pixmap = QPixmap::fromImage(image);
+    QPainter painter(&pixmap);
+    painter.setCompositionMode(QPainter::CompositionMode_Source);
+    painter.drawPixmap(0, 0, QPixmap::fromImage(image));
 }
 
 void Frame::resizePixmap(int newSideLength){

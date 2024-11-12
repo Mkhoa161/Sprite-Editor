@@ -31,7 +31,9 @@ signals:
     void fpsUpdated(int fps);
 
 private slots:
+    // Top menu bar
     void onChangeDimensionClicked();
+
     void emitColorChange();
     void emitHexChange();
     void on_addFrameButton_clicked();
@@ -40,6 +42,7 @@ private slots:
     void updateAnimationPreview(const Frame& frame);
     void onSelectFrame(int index);
     void on_fpsSpinBox_valueChanged(int fps);
+    void onFileLoaded();
 
 private:
     Ui::MainWindow *ui;

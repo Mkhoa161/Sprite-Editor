@@ -1,7 +1,12 @@
 #include "framemanager.h"
 #include <QDebug>
 #include <QJsonDocument>
+#include <QJsonArray>
 #include <QJsonObject>
+#include <QFileDialog>
+#include <QIODevice>
+#include <QTextStream>
+#include <QByteArray>
 
 FrameManager::FrameManager(int sideLength, int fps, QObject *parent)
     : selectedFrameIndex(-1), sideLength(sideLength), fps(fps), QObject{parent} {
@@ -27,7 +32,6 @@ void FrameManager::selectFrame(int frameIndex) {
 }
 
 void FrameManager::onFrameAdded() {
-    qDebug() << "onFrameAdded slot exec";
     Frame* newFrame = new Frame(sideLength);
 
     // Add the newly created Frame object to the vector
@@ -114,6 +118,70 @@ void FrameManager::updatePreview() {
         emit updateAnimationPreview(*frames[animFrameIndex]);
         animFrameIndex = (animFrameIndex + 1) % frames.size();
     }
+}
+
+void FrameManager::onSaveFile(){
+    QString filePath = QFileDialog::getSaveFileName(
+        nullptr,
+        "Save File",
+        QDir::homePath(),
+        "Sprite Files (*.sprite);;All Files (*)");
+
+    QFile file(filePath);
+    file.open(QIODevice::WriteOnly | QIODevice::Text);
+
+    QTextStream out(&file);
+
+    QJsonArray framesJsonArray;
+    for(Frame* frame : frames){
+        framesJsonArray.append(frame->convertToJson());
+    }
+
+    QJsonObject finalJson;
+    finalJson["sideLength"] = sideLength;
+    finalJson["frames"] = framesJsonArray;
+
+    out << QJsonDocument(finalJson).toJson(QJsonDocument::Indented);
+
+    file.close();
+}
+
+void FrameManager::onLoadFile(){
+    QString filePath = QFileDialog::getOpenFileName(
+        nullptr,
+        "Open File",
+        QDir::homePath(),
+        "Sprite Files (*.sprite)");
+
+    if(filePath.isEmpty()){
+        return;
+    }
+
+    QFile file(filePath);
+    file.open(QIODevice::ReadOnly | QIODevice::Text);
+
+    QByteArray fileData = file.readAll();
+
+    file.close();
+
+    for(int i = frames.size(); i >= 0; i--){
+        removeFrame(i);
+    }
+
+    QJsonObject jsonObj = QJsonDocument::fromJson(fileData).object();
+
+    int importedSideLength = jsonObj["sideLength"].toInt();
+    if(sideLength != importedSideLength){
+        onSetSideLength(importedSideLength);
+    }
+
+    for(QJsonValue value : jsonObj["frames"].toArray()){
+        onFrameAdded();
+        frames.back()->loadFromJson(value);
+    }
+
+    emit framesChanged(getFrames());
+    emit fileLoaded();
 }
 
 void FrameManager::onRotateCW(){

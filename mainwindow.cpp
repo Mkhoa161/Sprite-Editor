@@ -126,7 +126,14 @@ MainWindow::MainWindow(FrameManager& frameManager, QWidget *parent)
         ui->fpsSpinBox->setValue(5);
     });
 
-    // Canvas sizing
+    // Save
+    connect(ui->actionSave, &QAction::triggered, &frameManager, &FrameManager::onSaveFile);
+
+    // Load
+    connect(ui->actionLoad, &QAction::triggered, &frameManager, &FrameManager::onLoadFile);
+    connect(&frameManager, &FrameManager::fileLoaded, this, &MainWindow::onFileLoaded);
+    
+    // Canvas Sizing
     connect(ui->actionChange_Dimensions, &QAction::triggered, this, &MainWindow::onChangeDimensionClicked);
     connect(canvasSizing, &CanvasSizing::applyClicked, ui->canvas, &Canvas::onSideLengthChanged);
     connect(canvasSizing, &CanvasSizing::applyClicked, &frameManager, &FrameManager::onSetSideLength);
@@ -285,4 +292,8 @@ void MainWindow::on_fpsSpinBox_valueChanged(int fps)
 
 void MainWindow::onChangeDimensionClicked(){
     canvasSizing->exec();
+}
+
+void MainWindow::onFileLoaded(){
+    ui->canvas->repaint();
 }
