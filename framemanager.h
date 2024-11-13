@@ -5,9 +5,9 @@
     Class: CS3505, Fall 2024
     Assignment - A8: Sprite Editor Implementation
 
-    The FrameManager class is the core model for the Sprite Editor application, managing all frames in an animation sequence.
+    The FrameManager class is the core model for the Sprite Editor, managing all frames in an animation sequence.
     It maintains and manipulates a collection of Frame objects, enabling frame selection, addition, removal, and ordering.
-    This class also coordinates animation playback, frame transformation (rotation and flipping), and updates for previewing
+    This class also coordinates animation playback, frame transformation, and updates for previewing
     animations, all while ensuring changes are communicated to connected views and controllers.
 */
 

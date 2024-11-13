@@ -5,10 +5,10 @@
     Class: CS3505, Fall 2024
     Assignment - A8: Sprite Editor Implementation
 
-    The MainWindow class serves as the main view in the Sprite Editor application, providing the user interface
+    The MainWindow class serves as the main view for the Sprite Editor, providing the user interface
     for interacting with the FrameManager model and manipulating frames in an animation sequence.
     As the central view component, MainWindow manages user inputs, coordinates UI elements such as tool selections,
-    color pickers, and frame previews, and facilitates real-time updates in response to changes in the underlying data.
+    color pickers, and frame previews, and facilitates updates in response to changes in the underlying data.
 */
 
 #ifndef MAINWINDOW_H
