@@ -160,6 +160,9 @@ MainWindow::MainWindow(FrameManager& frameManager, QWidget *parent)
 
     frameManager.onSetSideLength(16);
     frameManager.onFrameAdded();
+
+    // Update the frame preview when canvas size changes.
+    connect(&frameManager, &FrameManager::sideLengthChanged, this, [&frameManager, this](int _){this->updateFramePreviews(frameManager.getFrames());});
 }
 
 MainWindow::~MainWindow()
