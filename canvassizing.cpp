@@ -18,15 +18,15 @@ CanvasSizing::CanvasSizing(QWidget *parent)
 
     ui->buttonBox->setStyleSheet(
         "QDialogButtonBox {"
-        "    color: gray;"               // Disabled text color
-        "    background-color: #f0f0f0;" // Light gray background
+        "    color: gray;"
+        "    background-color: #f0f0f0;"
         "}"
         "QPushButton {"
-        "    color: gray;"               // Disabled text color
-        "    background-color: #e0e0e0;" // Light gray button background
+        "    color: gray;"
+        "    background-color: #e0e0e0;"
         "}"
         "QPushButton:pressed {"
-        "    background-color: #d0d0d0;" // Darker gray when pressed
+        "    background-color: #d0d0d0;"
         "}"
         );
 }
@@ -37,10 +37,6 @@ CanvasSizing::~CanvasSizing()
 }
 
 void CanvasSizing::onApplyClicked(){
-    if(ui->spinBox->value() <= 0){
-
-    }
-
     emit applyClicked(ui->spinBox->value());
 
     close();
@@ -51,15 +47,15 @@ void CanvasSizing::onSpinBoxValueChanged(int value){
         ui->buttonBox->setEnabled(false);
         ui->buttonBox->setStyleSheet(
             "QDialogButtonBox {"
-            "    color: gray;"               // Disabled text color
-            "    background-color: #f0f0f0;" // Light gray background
+            "    color: gray;"
+            "    background-color: #f0f0f0;"
             "}"
             "QPushButton {"
-            "    color: gray;"               // Disabled text color
-            "    background-color: #e0e0e0;" // Light gray button background
+            "    color: gray;"
+            "    background-color: #e0e0e0;"
             "}"
             "QPushButton:pressed {"
-            "    background-color: #d0d0d0;" // Darker gray when pressed
+            "    background-color: #d0d0d0;"
             "}"
             );
     }
