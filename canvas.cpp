@@ -161,15 +161,7 @@ void Canvas::paintPixels() {
 
     if(currentMode == Mode::SQUARE){
 
-        for(QPoint shapePixel : shapePixels) {
-            emit paint(shapePixel, Qt::transparent);
-        }
-
-        for (int i = 0; i < int(paintedPixels.size()); i++){
-            QPoint currPixel = paintedPixels[i];
-            QColor currColor = paintedColors[i];
-            emit paint(currPixel, currColor);
-        }
+        redrawShape();
 
         if(isPressingMouse){
             shapePixels.clear();
@@ -218,32 +210,13 @@ void Canvas::paintPixels() {
             for(QPoint pixel : shapePixels) emit paint(pixel, color);
         }
         else{
-            for (int i = 0; i < int(paintedPixels.size()); i++){
-                QPoint currPixel = paintedPixels[i];
-                QColor currColor = paintedColors[i];
-                emit paint(currPixel, currColor);
-            }
-
-            for(QPoint pixel : shapePixels) {
-                paintedPixels.push_back(pixel);
-                paintedColors.push_back(color);
-                emit paint(pixel, color);
-            }
-            shapePixels.clear();
+            moveAndDisplayPixels(color);
         }
     }
 
     if(currentMode == Mode::SQUAREFILLED){
-        for(QPoint shapePixel : shapePixels) {
-            emit paint(shapePixel, Qt::transparent);
-        }
 
-        //for(QPoint pixel : paintedPixels) emit paint(pixel, color);
-        for (int i = 0; i < int(paintedPixels.size()); i++){
-            QPoint currPixel = paintedPixels[i];
-            QColor currColor = paintedColors[i];
-            emit paint(currPixel, currColor);
-        }
+        redrawShape();
 
         if(isPressingMouse){
             shapePixels.clear();
@@ -272,32 +245,13 @@ void Canvas::paintPixels() {
             for(QPoint pixel : shapePixels) emit paint(pixel, color);
         }
         else{
-            for (int i = 0; i < int(paintedPixels.size()); i++){
-                QPoint currPixel = paintedPixels[i];
-                QColor currColor = paintedColors[i];
-                emit paint(currPixel, currColor);
-            }
-
-            for(QPoint pixel : shapePixels) {
-                paintedPixels.push_back(pixel);
-                paintedColors.push_back(color);
-                emit paint(pixel, color);
-            }
-            shapePixels.clear();
+            moveAndDisplayPixels(color);
         }
     }
 
     if(currentMode == Mode::CIRCLE){
-        for(QPoint shapePixel : shapePixels) {
-            emit paint(shapePixel, Qt::transparent);
-        }
 
-        //for(QPoint pixel : paintedPixels) emit paint(pixel, color);
-        for (int i = 0; i < int(paintedPixels.size()); i++){
-            QPoint currPixel = paintedPixels[i];
-            QColor currColor = paintedColors[i];
-            emit paint(currPixel, currColor);
-        }
+        redrawShape();
 
         if(isPressingMouse){
             shapePixels.clear();
@@ -349,32 +303,13 @@ void Canvas::paintPixels() {
             for(QPoint pixel : shapePixels) emit paint(pixel, color);
         }
         else{
-            for (int i = 0; i < int(paintedPixels.size()); i++){
-                QPoint currPixel = paintedPixels[i];
-                QColor currColor = paintedColors[i];
-                emit paint(currPixel, currColor);
-            }
-
-            for(QPoint pixel : shapePixels) {
-                paintedPixels.push_back(pixel);
-                paintedColors.push_back(color);
-                emit paint(pixel, color);
-            }
-            shapePixels.clear();
+            moveAndDisplayPixels(color);
         }
     }
 
     if(currentMode == Mode::CIRCLEFILLED){
-        for(QPoint shapePixel : shapePixels) {
-            emit paint(shapePixel, Qt::transparent);
-        }
 
-        //for(QPoint pixel : paintedPixels) emit paint(pixel, color);
-        for (int i = 0; i < int(paintedPixels.size()); i++){
-            QPoint currPixel = paintedPixels[i];
-            QColor currColor = paintedColors[i];
-            emit paint(currPixel, currColor);
-        }
+        redrawShape();
 
         if(isPressingMouse){
             shapePixels.clear();
@@ -428,32 +363,13 @@ void Canvas::paintPixels() {
             for(QPoint pixel : shapePixels) emit paint(pixel, color);
         }
         else{
-            for (int i = 0; i < int(paintedPixels.size()); i++){
-                QPoint currPixel = paintedPixels[i];
-                QColor currColor = paintedColors[i];
-                emit paint(currPixel, currColor);
-            }
-
-            for(QPoint pixel : shapePixels) {
-                paintedPixels.push_back(pixel);
-                paintedColors.push_back(color);
-                emit paint(pixel, color);
-            }
-            shapePixels.clear();
+            moveAndDisplayPixels(color);
         }
     }
 
     if(currentMode == Mode::TRIANGLE){
-        for(QPoint shapePixel : shapePixels) {
-            emit paint(shapePixel, Qt::transparent);
-        }
 
-        //for(QPoint pixel : paintedPixels) emit paint(pixel, color);
-        for (int i = 0; i < int(paintedPixels.size()); i++){
-            QPoint currPixel = paintedPixels[i];
-            QColor currColor = paintedColors[i];
-            emit paint(currPixel, currColor);
-        }
+        redrawShape();
 
         if(isPressingMouse){
             shapePixels.clear();
@@ -498,32 +414,13 @@ void Canvas::paintPixels() {
             for(QPoint pixel : shapePixels) emit paint(pixel, color);
         }
         else{
-            for (int i = 0; i < int(paintedPixels.size()); i++){
-                QPoint currPixel = paintedPixels[i];
-                QColor currColor = paintedColors[i];
-                emit paint(currPixel, currColor);
-            }
-
-            for(QPoint pixel : shapePixels) {
-                paintedPixels.push_back(pixel);
-                paintedColors.push_back(color);
-                emit paint(pixel, color);
-            }
-            shapePixels.clear();
+            moveAndDisplayPixels(color);
         }
     }
 
     if(currentMode == Mode::TRIANGLEFILLED){
-        for(QPoint shapePixel : shapePixels) {
-            emit paint(shapePixel, Qt::transparent);
-        }
 
-        //for(QPoint pixel : paintedPixels) emit paint(pixel, color);
-        for (int i = 0; i < int(paintedPixels.size()); i++){
-            QPoint currPixel = paintedPixels[i];
-            QColor currColor = paintedColors[i];
-            emit paint(currPixel, currColor);
-        }
+        redrawShape();
 
         if(isPressingMouse){
             shapePixels.clear();
@@ -575,22 +472,38 @@ void Canvas::paintPixels() {
             for(QPoint pixel : shapePixels) emit paint(pixel, color);
         }
         else{
-            for (int i = 0; i < int(paintedPixels.size()); i++){
-                QPoint currPixel = paintedPixels[i];
-                QColor currColor = paintedColors[i];
-                emit paint(currPixel, currColor);
-            }
-
-            for(QPoint pixel : shapePixels) {
-                paintedPixels.push_back(pixel);
-                paintedColors.push_back(color);
-                emit paint(pixel, color);
-            }
-            shapePixels.clear();
+            moveAndDisplayPixels(color);
         }
     }
 
     repaint();
+}
+
+void Canvas::moveAndDisplayPixels(QColor color){
+    for (int i = 0; i < int(paintedPixels.size()); i++){
+        QPoint currPixel = paintedPixels[i];
+        QColor currColor = paintedColors[i];
+        emit paint(currPixel, currColor);
+    }
+
+    for(QPoint pixel : shapePixels) {
+        paintedPixels.push_back(pixel);
+        paintedColors.push_back(color);
+        emit paint(pixel, color);
+    }
+    shapePixels.clear();
+}
+
+void Canvas::redrawShape(){
+    for(QPoint shapePixel : shapePixels) {
+        emit paint(shapePixel, Qt::transparent);
+    }
+
+    for (int i = 0; i < int(paintedPixels.size()); i++){
+        QPoint currPixel = paintedPixels[i];
+        QColor currColor = paintedColors[i];
+        emit paint(currPixel, currColor);
+    }
 }
 
 void Canvas::mouseMoveEvent(QMouseEvent *event){

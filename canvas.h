@@ -77,9 +77,10 @@ private:
     std::vector<QColor> paintedColors;
 
     enum Mode currentMode = DEFAULT_MODE;
-    bool isMirrorMode;
 
+    bool isMirrorMode;
     bool isShapeMode;
+
     std::vector<QPoint> shapePixels;
 
     QPoint shapeStartPos;
@@ -90,6 +91,8 @@ private:
     void mouseReleaseEvent(QMouseEvent *event) override;
 
     void setShapeMode(bool enabled);
+    void moveAndDisplayPixels(QColor color);
+    void redrawShape();
 
     QRect getPixelRect(QPoint pixelPos);
 
