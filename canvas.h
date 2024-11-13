@@ -77,6 +77,7 @@ private:
 
     int sideLength;
     int pixelSize;
+    int canvasSize;
 
     QPoint mousePixelPos;
     bool isPressingMouse;
@@ -106,6 +107,15 @@ private:
     void setShapeMode(bool enabled);
     void moveAndDisplayPixels(QColor color);
     void redrawShape();
+
+    void brushPainting(QColor color);
+    void eraserPainting(QColor color);
+    void squarePainting(QColor color);
+    void squareFilledPainting(QColor color);
+    void circlePainting(QColor color);
+    void circleFilledPainting(QColor color);
+    void trianglePainting(QColor color);
+    void triangleFilledPainting(QColor color);
 
     QRect getPixelRect(QPoint pixelPos);
 

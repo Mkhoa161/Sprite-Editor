@@ -95,390 +95,43 @@ void Canvas::paintEvent(QPaintEvent *event) {
 }
 
 void Canvas::paintPixels() {
-    int canvasSize = pixelSize * sideLength;
+    // Make sure the canvas size is fixed for calculation in Mirror Mode
+    canvasSize = pixelSize * sideLength;
 
-    QColor color;
-    if (currentMode == Mode::ERASER) {
-        color = Qt::transparent;
-    }
-    else {
-        color = selectedColor;
-    }
+    // Set the current chosen color based on the mode
+    QColor color = (currentMode == ERASER) ? Qt::transparent : selectedColor;
 
-    if (currentMode == Mode::BRUSH) {
-        //This will be changed once paint is expanded to include shape tools
-        paintedPixels.push_back(QPoint(mousePixelPos));
-        paintedColors.push_back(color);
-
-        if (isMirrorMode) {
-            int newPosition = canvasSize / pixelSize - mousePixelPos.x() - 1;
-
-            QPoint mirroredPixel = QPoint(newPosition, mousePixelPos.y());
-            paintedPixels.push_back(mirroredPixel);
-            paintedColors.push_back(color);
-
-            emit paint(mirroredPixel, color);
-        }
-
-        emit paint(mousePixelPos, color);
-    }
-
-    if (currentMode == Mode::ERASER) {
-        vector<QPoint> newPaintedPixels;
-        vector<QColor> newPaintedColors;
-
-        for (int i = 0; i < int(paintedPixels.size()); i++) {
-            QPoint currPixel = paintedPixels[i];
-            QColor currColor = paintedColors[i];
-            if (!(currPixel.x() == mousePixelPos.x() && currPixel.y() == mousePixelPos.y())) {
-                if (isMirrorMode) {
-                    QPoint mirroredPixel = QPoint(canvasSize / pixelSize - currPixel.x() - 1, currPixel.y());
-                    if (!(mirroredPixel.x() == mousePixelPos.x() && mirroredPixel.y() == mousePixelPos.y())) {
-                        newPaintedPixels.push_back(currPixel);
-                        newPaintedColors.push_back(currColor);
-                    }
-                } else {
-                    newPaintedPixels.push_back(currPixel);
-                    newPaintedColors.push_back(currColor);
-                }
-            }
-        }
-
-        paintedPixels.clear();
-        paintedColors.clear();
-
-        for (int i = 0; i < int(newPaintedPixels.size()); i++) {
-            paintedPixels.push_back(newPaintedPixels[i]);
-            paintedColors.push_back(newPaintedColors[i]);
-        }
-
-        emit paint(QPoint(mousePixelPos), color);
-
-        if (isMirrorMode) {
-            QPoint mirroredPixel = QPoint(canvasSize / pixelSize - mousePixelPos.x() - 1, mousePixelPos.y());
-            emit paint(mirroredPixel, color);
-        }
+    // Select and execute the appropriate painting action based on the current mode
+    switch (currentMode) {
+    case BRUSH:
+        brushPainting(color);
+        break;
+    case ERASER:
+        eraserPainting(color);
+        break;
+    case SQUARE:
+        squarePainting(color);
+        break;
+    case SQUAREFILLED:
+        squareFilledPainting(color);
+        break;
+    case CIRCLE:
+        circlePainting(color);
+        break;
+    case CIRCLEFILLED:
+        circleFilledPainting(color);
+        break;
+    case TRIANGLE:
+        trianglePainting(color);
+        break;
+    case TRIANGLEFILLED:
+        triangleFilledPainting(color);
+        break;
+    default:
+        break;
     }
 
-    if (currentMode == Mode::SQUARE) {
-
-        redrawShape();
-
-        if (isPressingMouse) {
-            shapePixels.clear();
-
-            QPoint startPixel = shapeStartPos;
-            QPoint endPixel = mousePixelPos;
-
-            int x1 = std::min(startPixel.x(), endPixel.x());
-            int y1 = std::min(startPixel.y(), endPixel.y());
-            int x2 = std::max(startPixel.x(), endPixel.x());
-            int y2 = std::max(startPixel.y(), endPixel.y());
-
-            // Top and bottom edges
-            for (int i = x1; i <= x2; ++i) {
-                shapePixels.push_back(QPoint(i, y1)); // Top edge
-                shapePixels.push_back(QPoint(i, y2)); // Bottom edge
-
-                if (isMirrorMode) {
-                    int newPosition = canvasSize / pixelSize - i - 1;
-
-                    QPoint mirroredPixel1 = QPoint(newPosition, y1);
-                    shapePixels.push_back(mirroredPixel1);
-
-                    QPoint mirroredPixel2 = QPoint(newPosition, y2);
-                    shapePixels.push_back(mirroredPixel2);
-                }
-            }
-
-            // Left and right edges
-            for (int j = y1 + 1; j < y2; ++j) {
-                shapePixels.push_back(QPoint(x1, j)); // Left edge
-                shapePixels.push_back(QPoint(x2, j)); // Right edge
-
-                if (isMirrorMode) {
-                    int newPosition1 = canvasSize / pixelSize - x1 - 1;
-
-                    QPoint mirroredPixel1 = QPoint(newPosition1, j);
-                    shapePixels.push_back(mirroredPixel1);
-
-                    int newPosition2 = canvasSize / pixelSize - x2 - 1;
-                    QPoint mirroredPixel2 = QPoint(newPosition2, j);
-                    shapePixels.push_back(mirroredPixel2);
-                }
-            }
-
-            for (QPoint pixel : shapePixels) emit paint(pixel, color);
-        }
-        else {
-            moveAndDisplayPixels(color);
-        }
-    }
-
-    if (currentMode == Mode::SQUAREFILLED) {
-
-        redrawShape();
-
-        if (isPressingMouse) {
-            shapePixels.clear();
-
-            QPoint startPixel = shapeStartPos;
-            QPoint endPixel = mousePixelPos;
-
-            int xMin = std::min(startPixel.x(), endPixel.x());
-            int xMax = std::max(startPixel.x(), endPixel.x());
-            int yMin = std::min(startPixel.y(), endPixel.y());
-            int yMax = std::max(startPixel.y(), endPixel.y());
-
-            for (int i = xMin; i <= xMax; i++) {
-                for (int j = yMin; j <= yMax; j++) {
-                    shapePixels.push_back(QPoint(i, j));
-
-                    if (isMirrorMode) {
-                        int newPosition = canvasSize / pixelSize - i - 1;
-
-                        QPoint mirroredPixel = QPoint(newPosition, j);
-                        shapePixels.push_back(mirroredPixel);
-                    }
-                }
-            }
-
-            for (QPoint pixel : shapePixels) emit paint(pixel, color);
-        }
-        else {
-            moveAndDisplayPixels(color);
-        }
-    }
-
-    if (currentMode == Mode::CIRCLE) {
-
-        redrawShape();
-
-        if (isPressingMouse) {
-            shapePixels.clear();
-
-            QPoint center = shapeStartPos;
-            QPoint edge = mousePixelPos;
-            int radius = std::sqrt(std::pow(edge.x() - center.x(), 2) + std::pow(edge.y() - center.y(), 2));
-
-            int x = radius;
-            int y = 0;
-            int decision = 1 - x;
-
-            // Loop to draw the points on the circle's outline with optional mirroring
-            while (y <= x) {
-                // Draw the 8 symmetrical points on the circle
-                QVector<QPoint> circlePoints = {
-                    QPoint(center.x() + x, center.y() + y),
-                    QPoint(center.x() - x, center.y() + y),
-                    QPoint(center.x() + x, center.y() - y),
-                    QPoint(center.x() - x, center.y() - y),
-                    QPoint(center.x() + y, center.y() + x),
-                    QPoint(center.x() - y, center.y() + x),
-                    QPoint(center.x() + y, center.y() - x),
-                    QPoint(center.x() - y, center.y() - x)
-                };
-
-                for (QPoint point : circlePoints) {
-                    shapePixels.push_back(point);
-
-                    // If mirroring is enabled, add mirrored pixels
-                    if (isMirrorMode) {
-                        int mirroredX = canvasSize / pixelSize - point.x() - 1;
-                        QPoint mirroredPixel(mirroredX, point.y());
-                        shapePixels.push_back(mirroredPixel);
-                    }
-                }
-
-                y++;
-
-                // Update decision parameter
-                if (decision <= 0) {
-                    decision += 2 * y + 1;
-                }
-                else {
-                    x--;
-                    decision += 2 * (y - x) + 1;
-                }
-            }
-
-            for (QPoint pixel : shapePixels) emit paint(pixel, color);
-        }
-        else {
-            moveAndDisplayPixels(color);
-        }
-    }
-
-    if (currentMode == Mode::CIRCLEFILLED) {
-
-        redrawShape();
-
-        if (isPressingMouse) {
-            shapePixels.clear();
-
-            QPoint center = shapeStartPos;
-            QPoint edge = mousePixelPos;
-            int radius = std::sqrt(std::pow(edge.x() - center.x(), 2) + std::pow(edge.y() - center.y(), 2));
-
-            int x = radius;
-            int y = 0;
-            int decision = 1 - x;
-
-            // Loop to fill the circle
-            while (y <= x) {
-                // Draw horizontal lines to fill the circle
-                for (int i = center.x() - x; i <= center.x() + x; i++) {
-                    shapePixels.push_back(QPoint(i, center.y() + y));
-                    shapePixels.push_back(QPoint(i, center.y() - y));
-
-                    // Mirroring pixels if isMirrorMode is enabled
-                    if (isMirrorMode) {
-                        int mirroredX = canvasSize / pixelSize - i - 1;
-                        shapePixels.push_back(QPoint(mirroredX, center.y() + y));
-                        shapePixels.push_back(QPoint(mirroredX, center.y() - y));
-                    }
-                }
-
-                for (int i = center.x() - y; i <= center.x() + y; i++) {
-                    shapePixels.push_back(QPoint(i, center.y() + x));
-                    shapePixels.push_back(QPoint(i, center.y() - x));
-
-                    // Mirroring pixels if isMirrorMode is enabled
-                    if (isMirrorMode) {
-                        int mirroredX = canvasSize / pixelSize - i - 1;
-                        shapePixels.push_back(QPoint(mirroredX, center.y() + x));
-                        shapePixels.push_back(QPoint(mirroredX, center.y() - x));
-                    }
-                }
-
-                y++;
-
-                // Update decision parameter
-                if (decision <= 0) {
-                    decision += 2 * y + 1;
-                }
-                else {
-                    x--;
-                    decision += 2 * (y - x) + 1;
-                }
-            }
-
-            for (QPoint pixel : shapePixels) emit paint(pixel, color);
-        }
-        else {
-            moveAndDisplayPixels(color);
-        }
-    }
-
-    if (currentMode == Mode::TRIANGLE) {
-
-        redrawShape();
-
-        if (isPressingMouse) {
-            shapePixels.clear();
-
-            // Define the three vertices of the triangle
-            QPoint vertex1 = shapeStartPos; // Start position (first vertex)
-            QPoint vertex2(mousePixelPos.x(), shapeStartPos.y()); // Second vertex (horizontal from start)
-            QPoint vertex3((shapeStartPos.x() + mousePixelPos.x()) / 2, mousePixelPos.y()); // Third vertex (below, forming an isosceles triangle)
-
-            // Helper lambda to draw a line between two points
-            auto drawLine = [&](QPoint p1, QPoint p2) {
-                int x1 = p1.x();
-                int y1 = p1.y();
-                int x2 = p2.x();
-                int y2 = p2.y();
-
-                int dx = abs(x2 - x1), dy = abs(y2 - y1);
-                int sx = (x1 < x2) ? 1 : -1;
-                int sy = (y1 < y2) ? 1 : -1;
-                int err = dx - dy;
-
-                while (true) {
-                    shapePixels.push_back(QPoint(x1, y1));
-
-                    if (isMirrorMode) {
-                        int mirroredX = canvasSize / pixelSize - x1 - 1;
-                        shapePixels.push_back(QPoint(mirroredX, y1));
-                    }
-
-                    if (x1 == x2 && y1 == y2) break;
-                    int e2 = 2 * err;
-                    if (e2 > -dy) { err -= dy; x1 += sx; }
-                    if (e2 < dx) { err += dx; y1 += sy; }
-                }
-            };
-
-            // Draw the three edges of the triangle
-            drawLine(vertex1, vertex2); // Top edge
-            drawLine(vertex2, vertex3); // Right edge
-            drawLine(vertex3, vertex1); // Left edge
-
-            for (QPoint pixel : shapePixels) emit paint(pixel, color);
-        }
-        else {
-            moveAndDisplayPixels(color);
-        }
-    }
-
-    if (currentMode == Mode::TRIANGLEFILLED) {
-
-        redrawShape();
-
-        if (isPressingMouse) {
-            shapePixels.clear();
-
-            // Define the three vertices of the triangle
-            QPoint vertex1 = shapeStartPos; // Top vertex
-            QPoint vertex2(mousePixelPos.x(), shapeStartPos.y()); // Second vertex (horizontal from start)
-            QPoint vertex3((shapeStartPos.x() + mousePixelPos.x()) / 2, mousePixelPos.y()); // Bottom vertex to form an isosceles triangle
-
-            // Sort vertices by y-coordinate to simplify scanning from top to bottom
-            if (vertex2.y() < vertex1.y()) std::swap(vertex1, vertex2);
-            if (vertex3.y() < vertex1.y()) std::swap(vertex1, vertex3);
-            if (vertex3.y() < vertex2.y()) std::swap(vertex2, vertex3);
-
-            // Lambda to interpolate x-coordinates for a given y between two points
-            auto interpolateX = [](QPoint p1, QPoint p2, int y) -> int {
-                if (p1.y() == p2.y()) return p1.x(); // Avoid division by zero
-                return p1.x() + (y - p1.y()) * (p2.x() - p1.x()) / (p2.y() - p1.y());
-            };
-
-            // Fill the triangle using horizontal scan lines
-            for (int y = vertex1.y(); y <= vertex3.y(); y++) {
-                int xStart, xEnd;
-
-                // Determine the start and end x-coordinates for the current scanline
-                if (y < vertex2.y()) { // Top half (vertex1 to vertex2 and vertex3)
-                    xStart = interpolateX(vertex1, vertex3, y);
-                    xEnd = interpolateX(vertex1, vertex2, y);
-                } else { // Bottom half (vertex2 to vertex3)
-                    xStart = interpolateX(vertex1, vertex3, y);
-                    xEnd = interpolateX(vertex2, vertex3, y);
-                }
-
-                // Ensure xStart is less than xEnd
-                if (xStart > xEnd) std::swap(xStart, xEnd);
-
-                // Push points for each x position along the scanline
-                for (int x = xStart; x <= xEnd; x++) {
-                    shapePixels.push_back(QPoint(x, y));
-
-                    // Mirroring pixels if isMirrorMode is enabled
-                    if (isMirrorMode) {
-                        int mirroredX = canvasSize / pixelSize - x - 1;
-                        shapePixels.push_back(QPoint(mirroredX, y));
-                    }
-                }
-            }
-
-            for (QPoint pixel : shapePixels) emit paint(pixel, color);
-        }
-        else {
-            moveAndDisplayPixels(color);
-        }
-    }
-
+    // Trigger a repaint to apply changes
     repaint();
 }
 
@@ -506,6 +159,379 @@ void Canvas::redrawShape() {
         QPoint currPixel = paintedPixels[i];
         QColor currColor = paintedColors[i];
         emit paint(currPixel, currColor);
+    }
+}
+
+void Canvas::brushPainting(QColor color) {
+    //This will be changed once paint is expanded to include shape tools
+    paintedPixels.push_back(QPoint(mousePixelPos));
+    paintedColors.push_back(color);
+
+    if (isMirrorMode) {
+        int newPosition = canvasSize / pixelSize - mousePixelPos.x() - 1;
+
+        QPoint mirroredPixel = QPoint(newPosition, mousePixelPos.y());
+        paintedPixels.push_back(mirroredPixel);
+        paintedColors.push_back(color);
+
+        emit paint(mirroredPixel, color);
+    }
+
+    emit paint(mousePixelPos, color);
+}
+
+void Canvas::eraserPainting(QColor color) {
+    vector<QPoint> newPaintedPixels;
+    vector<QColor> newPaintedColors;
+
+    for (int i = 0; i < int(paintedPixels.size()); i++) {
+        QPoint currPixel = paintedPixels[i];
+        QColor currColor = paintedColors[i];
+        if (!(currPixel.x() == mousePixelPos.x() && currPixel.y() == mousePixelPos.y())) {
+            if (isMirrorMode) {
+                QPoint mirroredPixel = QPoint(canvasSize / pixelSize - currPixel.x() - 1, currPixel.y());
+                if (!(mirroredPixel.x() == mousePixelPos.x() && mirroredPixel.y() == mousePixelPos.y())) {
+                    newPaintedPixels.push_back(currPixel);
+                    newPaintedColors.push_back(currColor);
+                }
+            } else {
+                newPaintedPixels.push_back(currPixel);
+                newPaintedColors.push_back(currColor);
+            }
+        }
+    }
+
+    paintedPixels.clear();
+    paintedColors.clear();
+
+    for (int i = 0; i < int(newPaintedPixels.size()); i++) {
+        paintedPixels.push_back(newPaintedPixels[i]);
+        paintedColors.push_back(newPaintedColors[i]);
+    }
+
+    emit paint(QPoint(mousePixelPos), color);
+
+    if (isMirrorMode) {
+        QPoint mirroredPixel = QPoint(canvasSize / pixelSize - mousePixelPos.x() - 1, mousePixelPos.y());
+        emit paint(mirroredPixel, color);
+    }
+}
+
+void Canvas::squarePainting(QColor color) {
+
+    redrawShape();
+
+    if (isPressingMouse) {
+        shapePixels.clear();
+
+        QPoint startPixel = shapeStartPos;
+        QPoint endPixel = mousePixelPos;
+
+        int x1 = std::min(startPixel.x(), endPixel.x());
+        int y1 = std::min(startPixel.y(), endPixel.y());
+        int x2 = std::max(startPixel.x(), endPixel.x());
+        int y2 = std::max(startPixel.y(), endPixel.y());
+
+        // Top and bottom edges
+        for (int i = x1; i <= x2; ++i) {
+            shapePixels.push_back(QPoint(i, y1)); // Top edge
+            shapePixels.push_back(QPoint(i, y2)); // Bottom edge
+
+            if (isMirrorMode) {
+                int newPosition = canvasSize / pixelSize - i - 1;
+
+                QPoint mirroredPixel1 = QPoint(newPosition, y1);
+                shapePixels.push_back(mirroredPixel1);
+
+                QPoint mirroredPixel2 = QPoint(newPosition, y2);
+                shapePixels.push_back(mirroredPixel2);
+            }
+        }
+
+        // Left and right edges
+        for (int j = y1 + 1; j < y2; ++j) {
+            shapePixels.push_back(QPoint(x1, j)); // Left edge
+            shapePixels.push_back(QPoint(x2, j)); // Right edge
+
+            if (isMirrorMode) {
+                int newPosition1 = canvasSize / pixelSize - x1 - 1;
+
+                QPoint mirroredPixel1 = QPoint(newPosition1, j);
+                shapePixels.push_back(mirroredPixel1);
+
+                int newPosition2 = canvasSize / pixelSize - x2 - 1;
+                QPoint mirroredPixel2 = QPoint(newPosition2, j);
+                shapePixels.push_back(mirroredPixel2);
+            }
+        }
+
+        for (QPoint pixel : shapePixels) emit paint(pixel, color);
+    }
+    else {
+        moveAndDisplayPixels(color);
+    }
+}
+
+void Canvas::squareFilledPainting(QColor color) {
+
+    redrawShape();
+
+    if (isPressingMouse) {
+        shapePixels.clear();
+
+        QPoint startPixel = shapeStartPos;
+        QPoint endPixel = mousePixelPos;
+
+        int xMin = std::min(startPixel.x(), endPixel.x());
+        int xMax = std::max(startPixel.x(), endPixel.x());
+        int yMin = std::min(startPixel.y(), endPixel.y());
+        int yMax = std::max(startPixel.y(), endPixel.y());
+
+        for (int i = xMin; i <= xMax; i++) {
+            for (int j = yMin; j <= yMax; j++) {
+                shapePixels.push_back(QPoint(i, j));
+
+                if (isMirrorMode) {
+                    int newPosition = canvasSize / pixelSize - i - 1;
+
+                    QPoint mirroredPixel = QPoint(newPosition, j);
+                    shapePixels.push_back(mirroredPixel);
+                }
+            }
+        }
+
+        for (QPoint pixel : shapePixels) emit paint(pixel, color);
+    }
+    else {
+        moveAndDisplayPixels(color);
+    }
+}
+
+void Canvas::circlePainting(QColor color) {
+
+    redrawShape();
+
+    if (isPressingMouse) {
+        shapePixels.clear();
+
+        QPoint center = shapeStartPos;
+        QPoint edge = mousePixelPos;
+        int radius = std::sqrt(std::pow(edge.x() - center.x(), 2) + std::pow(edge.y() - center.y(), 2));
+
+        int x = radius;
+        int y = 0;
+        int decision = 1 - x;
+
+        // Loop to draw the points on the circle's outline with optional mirroring
+        while (y <= x) {
+            // Draw the 8 symmetrical points on the circle
+            QVector<QPoint> circlePoints = {
+                QPoint(center.x() + x, center.y() + y),
+                QPoint(center.x() - x, center.y() + y),
+                QPoint(center.x() + x, center.y() - y),
+                QPoint(center.x() - x, center.y() - y),
+                QPoint(center.x() + y, center.y() + x),
+                QPoint(center.x() - y, center.y() + x),
+                QPoint(center.x() + y, center.y() - x),
+                QPoint(center.x() - y, center.y() - x)
+            };
+
+            for (QPoint point : circlePoints) {
+                shapePixels.push_back(point);
+
+                // If mirroring is enabled, add mirrored pixels
+                if (isMirrorMode) {
+                    int mirroredX = canvasSize / pixelSize - point.x() - 1;
+                    QPoint mirroredPixel(mirroredX, point.y());
+                    shapePixels.push_back(mirroredPixel);
+                }
+            }
+
+            y++;
+
+            // Update decision parameter
+            if (decision <= 0) {
+                decision += 2 * y + 1;
+            }
+            else {
+                x--;
+                decision += 2 * (y - x) + 1;
+            }
+        }
+
+        for (QPoint pixel : shapePixels) emit paint(pixel, color);
+    }
+    else {
+        moveAndDisplayPixels(color);
+    }
+}
+
+void Canvas::circleFilledPainting(QColor color) {
+    redrawShape();
+
+    if (isPressingMouse) {
+        shapePixels.clear();
+
+        QPoint center = shapeStartPos;
+        QPoint edge = mousePixelPos;
+        int radius = std::sqrt(std::pow(edge.x() - center.x(), 2) + std::pow(edge.y() - center.y(), 2));
+
+        int x = radius;
+        int y = 0;
+        int decision = 1 - x;
+
+        // Loop to fill the circle
+        while (y <= x) {
+            // Draw horizontal lines to fill the circle
+            for (int i = center.x() - x; i <= center.x() + x; i++) {
+                shapePixels.push_back(QPoint(i, center.y() + y));
+                shapePixels.push_back(QPoint(i, center.y() - y));
+
+                // Mirroring pixels if isMirrorMode is enabled
+                if (isMirrorMode) {
+                    int mirroredX = canvasSize / pixelSize - i - 1;
+                    shapePixels.push_back(QPoint(mirroredX, center.y() + y));
+                    shapePixels.push_back(QPoint(mirroredX, center.y() - y));
+                }
+            }
+
+            for (int i = center.x() - y; i <= center.x() + y; i++) {
+                shapePixels.push_back(QPoint(i, center.y() + x));
+                shapePixels.push_back(QPoint(i, center.y() - x));
+
+                // Mirroring pixels if isMirrorMode is enabled
+                if (isMirrorMode) {
+                    int mirroredX = canvasSize / pixelSize - i - 1;
+                    shapePixels.push_back(QPoint(mirroredX, center.y() + x));
+                    shapePixels.push_back(QPoint(mirroredX, center.y() - x));
+                }
+            }
+
+            y++;
+
+            // Update decision parameter
+            if (decision <= 0) {
+                decision += 2 * y + 1;
+            }
+            else {
+                x--;
+                decision += 2 * (y - x) + 1;
+            }
+        }
+
+        for (QPoint pixel : shapePixels) emit paint(pixel, color);
+    }
+    else {
+        moveAndDisplayPixels(color);
+    }
+}
+
+void Canvas::trianglePainting(QColor color) {
+
+    redrawShape();
+
+    if (isPressingMouse) {
+        shapePixels.clear();
+
+        // Define the three vertices of the triangle
+        QPoint vertex1 = shapeStartPos; // Start position (first vertex)
+        QPoint vertex2(mousePixelPos.x(), shapeStartPos.y()); // Second vertex (horizontal from start)
+        QPoint vertex3((shapeStartPos.x() + mousePixelPos.x()) / 2, mousePixelPos.y()); // Third vertex (below, forming an isosceles triangle)
+
+        // Helper lambda to draw a line between two points
+        auto drawLine = [&](QPoint p1, QPoint p2) {
+            int x1 = p1.x();
+            int y1 = p1.y();
+            int x2 = p2.x();
+            int y2 = p2.y();
+
+            int dx = abs(x2 - x1), dy = abs(y2 - y1);
+            int sx = (x1 < x2) ? 1 : -1;
+            int sy = (y1 < y2) ? 1 : -1;
+            int err = dx - dy;
+
+            while (true) {
+                shapePixels.push_back(QPoint(x1, y1));
+
+                if (isMirrorMode) {
+                    int mirroredX = canvasSize / pixelSize - x1 - 1;
+                    shapePixels.push_back(QPoint(mirroredX, y1));
+                }
+
+                if (x1 == x2 && y1 == y2) break;
+                int e2 = 2 * err;
+                if (e2 > -dy) { err -= dy; x1 += sx; }
+                if (e2 < dx) { err += dx; y1 += sy; }
+            }
+        };
+
+        // Draw the three edges of the triangle
+        drawLine(vertex1, vertex2); // Top edge
+        drawLine(vertex2, vertex3); // Right edge
+        drawLine(vertex3, vertex1); // Left edge
+
+        for (QPoint pixel : shapePixels) emit paint(pixel, color);
+    }
+    else {
+        moveAndDisplayPixels(color);
+    }
+}
+
+void Canvas::triangleFilledPainting(QColor color) {
+
+    redrawShape();
+
+    if (isPressingMouse) {
+        shapePixels.clear();
+
+        // Define the three vertices of the triangle
+        QPoint vertex1 = shapeStartPos; // Top vertex
+        QPoint vertex2(mousePixelPos.x(), shapeStartPos.y()); // Second vertex (horizontal from start)
+        QPoint vertex3((shapeStartPos.x() + mousePixelPos.x()) / 2, mousePixelPos.y()); // Bottom vertex to form an isosceles triangle
+
+        // Sort vertices by y-coordinate to simplify scanning from top to bottom
+        if (vertex2.y() < vertex1.y()) std::swap(vertex1, vertex2);
+        if (vertex3.y() < vertex1.y()) std::swap(vertex1, vertex3);
+        if (vertex3.y() < vertex2.y()) std::swap(vertex2, vertex3);
+
+        // Lambda to interpolate x-coordinates for a given y between two points
+        auto interpolateX = [](QPoint p1, QPoint p2, int y) -> int {
+            if (p1.y() == p2.y()) return p1.x(); // Avoid division by zero
+            return p1.x() + (y - p1.y()) * (p2.x() - p1.x()) / (p2.y() - p1.y());
+        };
+
+        // Fill the triangle using horizontal scan lines
+        for (int y = vertex1.y(); y <= vertex3.y(); y++) {
+            int xStart, xEnd;
+
+            // Determine the start and end x-coordinates for the current scanline
+            if (y < vertex2.y()) { // Top half (vertex1 to vertex2 and vertex3)
+                xStart = interpolateX(vertex1, vertex3, y);
+                xEnd = interpolateX(vertex1, vertex2, y);
+            } else { // Bottom half (vertex2 to vertex3)
+                xStart = interpolateX(vertex1, vertex3, y);
+                xEnd = interpolateX(vertex2, vertex3, y);
+            }
+
+            // Ensure xStart is less than xEnd
+            if (xStart > xEnd) std::swap(xStart, xEnd);
+
+            // Push points for each x position along the scanline
+            for (int x = xStart; x <= xEnd; x++) {
+                shapePixels.push_back(QPoint(x, y));
+
+                // Mirroring pixels if isMirrorMode is enabled
+                if (isMirrorMode) {
+                    int mirroredX = canvasSize / pixelSize - x - 1;
+                    shapePixels.push_back(QPoint(mirroredX, y));
+                }
+            }
+        }
+
+        for (QPoint pixel : shapePixels) emit paint(pixel, color);
+    }
+    else {
+        moveAndDisplayPixels(color);
     }
 }
 
