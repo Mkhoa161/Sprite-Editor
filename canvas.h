@@ -75,6 +75,7 @@ private:
 
     Ui::Canvas *ui;
 
+    int uiMinSide = 500;
     int sideLength;
     int pixelSize;
 
@@ -116,6 +117,8 @@ private:
     void paintCheckerBoard(int resolution);
 
     std::vector<QPoint> mirrorPixels(std::vector<QPoint> pixelPositions);
+
+    virtual void resizeEvent(QResizeEvent *event) override;
 
 };
 
