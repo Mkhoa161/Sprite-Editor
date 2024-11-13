@@ -57,8 +57,8 @@ void FrameManager::removeFrame(int frameIndex) {
     }
 }
 
-void FrameManager::onFrameRemove(){
-    if (frames.size() != 1){
+void FrameManager::onFrameRemove() {
+    if (frames.size() != 1) {
         removeFrame(selectedFrameIndex);
         emit frameCountChanged(frames.size());
         emit selectedFrameChanged(getSelectedFrame());
@@ -93,12 +93,12 @@ std::vector<Frame*>& FrameManager::getFrames() {
     return frames;
 }
 
-void FrameManager::onPainted(QPoint pixelPos, QColor color){
+void FrameManager::onPainted(QPoint pixelPos, QColor color) {
     getSelectedFrame()->updatePixmap(pixelPos, color);
     emit framesChanged(getFrames());
 }
 
-void FrameManager::onFrameSelect(int frameIndex){
+void FrameManager::onFrameSelect(int frameIndex) {
     selectFrame(frameIndex);
 }
 
@@ -120,7 +120,7 @@ void FrameManager::updatePreview() {
     }
 }
 
-void FrameManager::onSaveFile(){
+void FrameManager::onSaveFile() {
     QString filePath = QFileDialog::getSaveFileName(
         nullptr,
         "Save File",
@@ -133,7 +133,7 @@ void FrameManager::onSaveFile(){
     QTextStream out(&file);
 
     QJsonArray framesJsonArray;
-    for(Frame* frame : frames){
+    for (Frame* frame : frames) {
         framesJsonArray.append(frame->convertToJson());
     }
 
@@ -146,14 +146,14 @@ void FrameManager::onSaveFile(){
     file.close();
 }
 
-void FrameManager::onLoadFile(){
+void FrameManager::onLoadFile() {
     QString filePath = QFileDialog::getOpenFileName(
         nullptr,
         "Open File",
         QDir::homePath(),
         "Sprite Files (*.sprite)");
 
-    if(filePath.isEmpty()){
+    if (filePath.isEmpty()) {
         return;
     }
 
@@ -164,18 +164,18 @@ void FrameManager::onLoadFile(){
 
     file.close();
 
-    for(int i = frames.size(); i >= 0; i--){
+    for (int i = frames.size(); i >= 0; i--) {
         removeFrame(i);
     }
 
     QJsonObject jsonObj = QJsonDocument::fromJson(fileData).object();
 
     int importedSideLength = jsonObj["sideLength"].toInt();
-    if(sideLength != importedSideLength){
+    if (sideLength != importedSideLength) {
         onSetSideLength(importedSideLength);
     }
 
-    for(QJsonValue value : jsonObj["frames"].toArray()){
+    for (QJsonValue value : jsonObj["frames"].toArray()) {
         onFrameAdded();
         frames.back()->loadFromJson(value);
     }
@@ -184,22 +184,22 @@ void FrameManager::onLoadFile(){
     emit fileLoaded();
 }
 
-void FrameManager::onRotateCW(){
+void FrameManager::onRotateCW() {
     getSelectedFrame()->rotate(true);
     emit selectedFrameChanged(getSelectedFrame());
     emit framesChanged(getFrames());
 }
-void FrameManager::onRotateCCW(){
+void FrameManager::onRotateCCW() {
     getSelectedFrame()->rotate(false);
     emit selectedFrameChanged(getSelectedFrame());
     emit framesChanged(getFrames());
 }
-void FrameManager::onFlipAlongX(){
+void FrameManager::onFlipAlongX() {
     getSelectedFrame()->flip(true);
     emit selectedFrameChanged(getSelectedFrame());
     emit framesChanged(getFrames());
 }
-void FrameManager::onFlipAlongY(){
+void FrameManager::onFlipAlongY() {
     getSelectedFrame()->flip(false);
     emit selectedFrameChanged(getSelectedFrame());
     emit framesChanged(getFrames());

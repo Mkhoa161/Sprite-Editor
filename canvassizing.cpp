@@ -36,14 +36,14 @@ CanvasSizing::~CanvasSizing()
     delete ui;
 }
 
-void CanvasSizing::onApplyClicked(){
+void CanvasSizing::onApplyClicked() {
     emit applyClicked(ui->spinBox->value());
 
     close();
 }
 
-void CanvasSizing::onSpinBoxValueChanged(int value){
-    if(value <= 0){
+void CanvasSizing::onSpinBoxValueChanged(int value) {
+    if (value <= 0) {
         ui->buttonBox->setEnabled(false);
         ui->buttonBox->setStyleSheet(
             "QDialogButtonBox {"
@@ -59,7 +59,7 @@ void CanvasSizing::onSpinBoxValueChanged(int value){
             "}"
             );
     }
-    else{
+    else {
         ui->buttonBox->setEnabled(true);
         ui->buttonBox->setStyleSheet("");
     }

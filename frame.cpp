@@ -10,29 +10,29 @@
 
 #include <QDebug>
 
-Frame::Frame(int sideLength){
+Frame::Frame(int sideLength) {
     pixmap = QPixmap(sideLength, sideLength);
     pixmap.fill(Qt::transparent);
     this->sideLength = sideLength;
 }
 
-Frame::Frame(const Frame& other){
+Frame::Frame(const Frame& other) {
     pixmap = QPixmap(other.pixmap);
 }
 
-Frame& Frame::operator =(Frame other){
+Frame& Frame::operator =(Frame other) {
     qSwap(pixmap, other.pixmap);
 
     return *this;
 }
 
-QJsonArray Frame::convertToJson(){
+QJsonArray Frame::convertToJson() {
     QImage image = pixmap.toImage();
 
     QJsonArray pixelArrayJson;
 
-    for(int y = 0; y < image.height(); y++){
-        for(int x = 0; x < image.width(); x++){
+    for (int y = 0; y < image.height(); y++) {
+        for (int x = 0; x < image.width(); x++) {
             QColor color = image.pixelColor(x,y);
 
             QJsonObject pixel;
@@ -48,14 +48,14 @@ QJsonArray Frame::convertToJson(){
     return pixelArrayJson;
 }
 
-void Frame::loadFromJson(QJsonValue json){
+void Frame::loadFromJson(QJsonValue json) {
     QJsonArray pixelArray = json.toArray();
 
     QImage image(sideLength, sideLength, QImage::Format_ARGB32);
 
     int index = 0;
-    for(int y = 0; y < sideLength; y++){
-        for(int x = 0; x < sideLength; x++){
+    for (int y = 0; y < sideLength; y++) {
+        for (int x = 0; x < sideLength; x++) {
             QJsonObject pixel = pixelArray[index].toObject();
 
             int r = pixel["r"].toInt();
@@ -74,7 +74,7 @@ void Frame::loadFromJson(QJsonValue json){
     painter.drawPixmap(0, 0, QPixmap::fromImage(image));
 }
 
-void Frame::resizePixmap(int newSideLength){
+void Frame::resizePixmap(int newSideLength) {
     QPixmap newPixmap(newSideLength, newSideLength);
     newPixmap.fill(Qt::transparent);
     QPainter painter(&newPixmap);
@@ -83,8 +83,8 @@ void Frame::resizePixmap(int newSideLength){
     qSwap(pixmap, newPixmap);
 }
 
-void Frame::updatePixmap(QPoint pixelPos, QColor color){
-    if(!&pixmap){
+void Frame::updatePixmap(QPoint pixelPos, QColor color) {
+    if (!&pixmap) {
         return;
     }
 
@@ -93,13 +93,13 @@ void Frame::updatePixmap(QPoint pixelPos, QColor color){
     painter.fillRect(pixelPos.x(), pixelPos.y(), 1, 1, color);
 }
 
-void Frame::rotate(bool isClockwise){
+void Frame::rotate(bool isClockwise) {
     QTransform transform;
     transform.rotate(isClockwise ? 90 : -90);
     pixmap = pixmap.transformed(transform);
 }
 
-void Frame::flip(bool isAlongXAxis){
+void Frame::flip(bool isAlongXAxis) {
     QTransform transform;
     if (isAlongXAxis) {
         transform.scale(1, -1);

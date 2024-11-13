@@ -78,12 +78,12 @@ MainWindow::MainWindow(FrameManager& frameManager, QWidget *parent)
     connect(toolButtonGroup,
             QOverload<QAbstractButton*, bool>::of(&QButtonGroup::buttonToggled),
             this,
-            [this](QAbstractButton* button, bool checked){
+            [this](QAbstractButton* button, bool checked) {
                 if (checked) {
                     int id = toolButtonGroup->id(button);
 
                     // toolbar ui updates
-                    switch (id){
+                    switch (id) {
                     case 0:
                         ui->actionPen->setEnabled(false);
                         ui->actionEraser->setEnabled(true);
@@ -164,7 +164,7 @@ MainWindow::MainWindow(FrameManager& frameManager, QWidget *parent)
     frameManager.onFrameAdded();
 
     // Update the frame preview when canvas size changes.
-    connect(&frameManager, &FrameManager::sideLengthChanged, this, [&frameManager, this](int _){this->updateFramePreviews(frameManager.getFrames());});
+    connect(&frameManager, &FrameManager::sideLengthChanged, this, [&frameManager, this](int _) {this->updateFramePreviews(frameManager.getFrames());});
 }
 
 MainWindow::~MainWindow()
@@ -229,14 +229,14 @@ void MainWindow::on_addFrameButton_clicked()
     emit frameAdded();
 }
 
-void MainWindow::frameCountChanged(int newFrameCount){
+void MainWindow::frameCountChanged(int newFrameCount) {
     ui->frameSlider->setMaximum(newFrameCount - 1);
     ui->frameSpinBox->setMaximum(newFrameCount - 1);
 }
 
-void MainWindow::onSelectFrame(int index){
+void MainWindow::onSelectFrame(int index) {
     frameLabels[index]->setStyleSheet("QLabel { border: 1px solid #2196F3; }");
-    if (selectedFrameIndex >= 0 && selectedFrameIndex <= frameLabels.size() - 1){
+    if (selectedFrameIndex >= 0 && selectedFrameIndex <= frameLabels.size() - 1) {
         frameLabels[selectedFrameIndex]->setStyleSheet("QLabel { border: 1px solid #DEDEDE; }");
     }
     selectedFrameIndex = index;
@@ -295,10 +295,10 @@ void MainWindow::on_fpsSpinBox_valueChanged(int fps)
     emit fpsUpdated(fps);
 }
 
-void MainWindow::onChangeDimensionClicked(){
+void MainWindow::onChangeDimensionClicked() {
     canvasSizing->exec();
 }
 
-void MainWindow::onFileLoaded(){
+void MainWindow::onFileLoaded() {
     ui->canvas->repaint();
 }
