@@ -86,7 +86,7 @@ private:
 
     void paintPixels();
 
-    void paintCheckerBoard();
+    void paintCheckerBoard(int resolution);
 
     std::vector<QPoint> mirrorPixels(std::vector<QPoint> pixelPositions);
 

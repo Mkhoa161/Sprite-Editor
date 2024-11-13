@@ -52,7 +52,7 @@ void Canvas::onSelectedFrameChanged(Frame *newSelectedFrame){
 void Canvas::onSideLengthChanged(int newSideLength){
     sideLength = newSideLength;
     pixelSize = width() / sideLength;
-    paintCheckerBoard();
+    paintCheckerBoard(pixelSize * sideLength);
 }
 
 void Canvas::paintEvent(QPaintEvent *event) {
@@ -133,8 +133,8 @@ QPoint Canvas::convertWorldToPixel(QPoint mousePos){
     return QPoint(x, y);
 }
 
-void Canvas::paintCheckerBoard(){
-    backgroundPixmap = QPixmap(size());
+void Canvas::paintCheckerBoard(int resolution){
+    backgroundPixmap = QPixmap(resolution, resolution);
     QPainter painter(&backgroundPixmap);
 
     QColor black(117, 117, 117);
