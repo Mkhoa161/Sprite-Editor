@@ -71,6 +71,8 @@ MainWindow::MainWindow(FrameManager& frameManager, QWidget *parent)
             &FrameManager::onFlipAlongY);
 
 
+
+
     // Changes modes of the selected tool in canvas
     connect(this, &MainWindow::toolSelected, ui->canvas, &Canvas::selectTool);
     connect(toolButtonGroup,

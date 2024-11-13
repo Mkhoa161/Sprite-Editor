@@ -12,6 +12,7 @@
 #include <QRect>
 #include <QPainter>
 #include <vector>
+
 #include "frame.h"
 
 namespace Ui {
@@ -72,13 +73,26 @@ private:
     QPixmap backgroundPixmap;
     QPixmap* foregroundPixmap;
 
+    std::vector<QPoint> paintedPixels;
+    std::vector<QColor> paintedColors;
+
     enum Mode currentMode = DEFAULT_MODE;
+
     bool isMirrorMode;
+    bool isShapeMode;
+
+    std::vector<QPoint> shapePixels;
+
+    QPoint shapeStartPos;
 
     void paintEvent(QPaintEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
+
+    void setShapeMode(bool enabled);
+    void moveAndDisplayPixels(QColor color);
+    void redrawShape();
 
     QRect getPixelRect(QPoint pixelPos);
 
