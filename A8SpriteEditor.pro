@@ -10,6 +10,7 @@ CONFIG += c++17
 
 SOURCES += \
     canvas.cpp \
+    canvassizing.cpp \
     frame.cpp \
     framemanager.cpp \
     main.cpp \
@@ -17,12 +18,14 @@ SOURCES += \
 
 HEADERS += \
     canvas.h \
+    canvassizing.h \
     frame.h \
     framemanager.h \
     mainwindow.h
 
 FORMS += \
     canvas.ui \
+    canvassizing.ui \
     mainwindow.ui
 
 # Default rules for deployment.

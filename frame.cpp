@@ -13,10 +13,7 @@
 Frame::Frame(int sideLength){
     pixmap = QPixmap(sideLength, sideLength);
     pixmap.fill(Qt::transparent);
-
     this->sideLength = sideLength;
-
-    qDebug() << "frame ctor called";
 }
 
 Frame::Frame(const Frame& other){
@@ -29,13 +26,10 @@ Frame& Frame::operator =(Frame other){
     return *this;
 }
 
-QJsonObject Frame::ConvertToJson(){
+QJsonArray Frame::convertToJson(){
     QImage image = pixmap.toImage();
 
-    QJsonObject frame;
-    frame["sideLength"] = image.height();
-
-    QJsonArray pixelArray;
+    QJsonArray pixelArrayJson;
 
     for(int y = 0; y < image.height(); y++){
         for(int x = 0; x < image.width(); x++){
@@ -47,19 +41,15 @@ QJsonObject Frame::ConvertToJson(){
             pixel["b"] = color.blue();
             pixel["a"] = color.alpha();
 
-            pixelArray.append(pixel);
+            pixelArrayJson.append(pixel);
         }
     }
 
-
-    frame["pixels"] = pixelArray;
-
-    return frame;
+    return pixelArrayJson;
 }
 
-void Frame::LoadFromJson(QJsonObject json){
-    QJsonArray pixelArray = json["pixels"].toArray();
-    int sideLength = json["sideLength"].toInt();
+void Frame::loadFromJson(QJsonValue json){
+    QJsonArray pixelArray = json.toArray();
 
     QImage image(sideLength, sideLength, QImage::Format_ARGB32);
 
@@ -75,18 +65,22 @@ void Frame::LoadFromJson(QJsonObject json){
 
             QColor color(r,g,b,a);
             image.setPixelColor(x, y, color);
+            index++;
         }
     }
 
-    pixmap = QPixmap::fromImage(image);
+    QPainter painter(&pixmap);
+    painter.setCompositionMode(QPainter::CompositionMode_Source);
+    painter.drawPixmap(0, 0, QPixmap::fromImage(image));
 }
 
 void Frame::resizePixmap(int newSideLength){
-    sideLength = newSideLength;
-    int newResolution = newSideLength;
+    QPixmap newPixmap(newSideLength, newSideLength);
+    newPixmap.fill(Qt::transparent);
+    QPainter painter(&newPixmap);
 
-    QPainter painter(&pixmap);
-    painter.drawPixmap(0, 0, pixmap.scaled(newResolution, newResolution, Qt::IgnoreAspectRatio));
+    painter.drawPixmap(0, 0, pixmap);
+    qSwap(pixmap, newPixmap);
 }
 
 void Frame::updatePixmap(QPoint pixelPos, QColor color){
@@ -97,4 +91,23 @@ void Frame::updatePixmap(QPoint pixelPos, QColor color){
     QPainter painter(&pixmap);
     painter.setCompositionMode(QPainter::CompositionMode_Source);
     painter.fillRect(pixelPos.x(), pixelPos.y(), 1, 1, color);
+}
+
+void Frame::rotate(bool isClockwise){
+    QTransform transform;
+    transform.rotate(isClockwise ? 90 : -90);
+    pixmap = pixmap.transformed(transform);
+}
+
+void Frame::flip(bool isAlongXAxis){
+    QTransform transform;
+    if (isAlongXAxis) {
+        transform.scale(1, -1);
+        transform.translate(0, -pixmap.height());
+    } else {
+        transform.scale(-1, 1);
+        transform.translate(-pixmap.width(), 0);
+    }
+
+    pixmap = pixmap.transformed(transform);
 }

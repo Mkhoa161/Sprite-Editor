@@ -29,17 +29,17 @@ public:
     Frame &operator=(Frame other);
 
     ///
-    /// \brief ConvertToJson Convert the foregroundPixmap of the frame into Json
+    /// \brief convertToJson Convert the foregroundPixmap of the frame into Json
     /// which stores each pixel data of this frame.
     /// \return A QJsonObject that holds the frame's Json data.
     ///
-    QJsonObject ConvertToJson();
+    QJsonArray convertToJson();
 
     ///
-    /// \brief LoadFromJson Using data from a QJsonObject to override the foregroundPixmap.
-    /// \param json A QJsonObject from where the data will be used to override.
+    /// \brief loadFromJson Using data from a QJsonObject to override the foregroundPixmap.
+    /// \param json A QJsonValue from where the data will be used to override.
     ///
-    void LoadFromJson(QJsonObject json);
+    void loadFromJson(QJsonValue json);
 
     ///
     /// \brief resizePixmap Resize the pixmap according to the new side length of pixel size.
@@ -53,6 +53,18 @@ public:
     /// \param color The new color to have at pixelPos
     ///
     void updatePixmap(QPoint pixelPos, QColor color);
+
+    ///
+    ///
+    ///
+    ///
+    void rotate(bool isClockwise);
+
+    ///
+    ///
+    ///
+    ///
+    void flip(bool isAlongXAxis);
 
     ///
     /// \brief pixmap The QPixmap where the painting is stored. This will be what the user paints.
