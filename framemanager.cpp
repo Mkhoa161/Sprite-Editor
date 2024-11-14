@@ -28,7 +28,7 @@ void FrameManager::selectFrame(int frameIndex) {
         selectedFrameIndex = frameIndex;
         emit selectedFrameChanged(getSelectedFrame());
     }
-    emit selectFrameSignal(selectedFrameIndex);
+    emit frameSelected(selectedFrameIndex);
 }
 
 void FrameManager::onFrameAdded() {
@@ -115,7 +115,7 @@ void FrameManager::fpsUpdated(int newFps)
 
 void FrameManager::updatePreview() {
     if (!frames.empty()) {
-        emit updateAnimationPreview(*frames[animFrameIndex]);
+        emit animationPreviewUpdated(*frames[animFrameIndex]);
         animFrameIndex = (animFrameIndex + 1) % frames.size();
     }
 }

@@ -154,11 +154,11 @@ MainWindow::MainWindow(FrameManager& frameManager, QWidget *parent)
     connect(&frameManager, &FrameManager::frameCountChanged, this, &MainWindow::frameCountChanged);
     connect(ui->frameSpinBox, &QSpinBox::valueChanged, &frameManager, &FrameManager::onFrameSelect);
     connect(this, &MainWindow::frameSelect, &frameManager, &FrameManager::onFrameSelect);
-    connect(&frameManager, &FrameManager::selectFrameSignal, this, &MainWindow::onSelectFrame);
+    connect(&frameManager, &FrameManager::frameSelected, this, &MainWindow::onSelectFrame);
 
     // Animation preview
     connect(this, &MainWindow::fpsUpdated, &frameManager, &FrameManager::fpsUpdated);
-    connect(&frameManager, &FrameManager::updateAnimationPreview, this, &MainWindow::updateAnimationPreview);
+    connect(&frameManager, &FrameManager::animationPreviewUpdated, this, &MainWindow::updateAnimationPreview);
 
     frameManager.onSetSideLength(16);
     frameManager.onFrameAdded();
