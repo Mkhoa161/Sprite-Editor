@@ -164,7 +164,6 @@ void Canvas::redrawShape() {
 }
 
 void Canvas::brushPainting(QColor color) {
-    //This will be changed once paint is expanded to include shape tools
     paintedPixels.push_back(QPoint(mousePixelPos));
     paintedColors.push_back(color);
 
@@ -565,10 +564,6 @@ void Canvas::mouseReleaseEvent(QMouseEvent *event) {
     if (isShapeMode) {
         paintPixels();
     }
-}
-
-QRect Canvas::getPixelRect(QPoint pixelPos) {
-    return QRect(pixelPos * pixelSize, QSize(pixelSize, pixelSize));
 }
 
 QPoint Canvas::convertWorldToPixel(QPoint mousePos) {
