@@ -9,31 +9,28 @@
     and manipulate pixels within a designated drawing area. As the primary editing surface in the view,
     Canvas allows for pixel specific changes, supporting various tools, shapes, and colors
     to create and modify individual frames in the animation sequence.
+
+    Code style checked by: Zhuyi Bu
 */
 
 #ifndef CANVAS_H
 #define CANVAS_H
 
+#include "frame.h"
 #include <QWidget>
-#include <QApplication>
-#include <QMainWindow>
-#include <QVBoxLayout>
 #include <QPixmap>
 #include <QPainter>
 #include <QColor>
 #include <QPoint>
-#include <QRect>
-#include <QPainter>
 #include <vector>
 
-#include "frame.h"
+using std::vector;
 
 namespace Ui {
 class Canvas;
 }
 
-class Canvas : public QWidget
-{
+class Canvas : public QWidget {
     Q_OBJECT
 
 public:
@@ -59,14 +56,14 @@ public:
     ~Canvas();
 
 signals:
-    void paint(QPoint pixelPos, QColor color);
-    void erase(QPoint pixelPos);
+    void painted(QPoint pixelPos, QColor color);
+    void erased(QPoint pixelPos);
 
 public slots:
     /// \brief Slot to capture when the user selects a different tool mode.
     /// Sets the selected tool to the new mode.
     /// \param newMode The mode type of the selected tool.
-    void selectTool(enum Mode newMode);
+    void onToolSelected(enum Mode newMode);
 
     /// \brief Slot to capture when the user selects a different color.
     /// Sets the selected color to the color with selected RGBA values.
@@ -74,12 +71,12 @@ public slots:
     /// \param g The green value of the new color.
     /// \param b The blue value of the new color.
     /// \param a The alpha value of the new color.
-    void setCurrentColor(int r, int g, int b, int a);
+    void onCurrentColorSet(int r, int g, int b, int a);
 
     /// \brief Slot to capture when the user turns on mirror mode functionality of the canvas.
     /// When mirror mode functionality is on, drawn pixels are reflected across the Y axis of the canvas.
     /// \param enabled Whether mirror mode is enabled.
-    void setMirrorMode(bool enabled);
+    void onMirrorModeSet(bool enabled);
 
     /// \brief Slot to capture when the user changes the selected frame to work on.
     /// The pixels drawn on the canvas will be repainted to reflect the selected frame.
@@ -108,15 +105,15 @@ private:
     QPixmap backgroundPixmap;
     QPixmap* foregroundPixmap;
 
-    std::vector<QPoint> paintedPixels;
-    std::vector<QColor> paintedColors;
+    vector<QPoint> paintedPixels;
+    vector<QColor> paintedColors;
 
     enum Mode currentMode = DEFAULT_MODE;
 
     bool isMirrorMode;
     bool isShapeMode;
 
-    std::vector<QPoint> shapePixels;
+    vector<QPoint> shapePixels;
 
     QPoint shapeStartPos;
 

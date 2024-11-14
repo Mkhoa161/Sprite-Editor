@@ -47,7 +47,7 @@ MainWindow::MainWindow(FrameManager& frameManager, QWidget *parent)
     connect(ui->actionMirror,
             &QAction::toggled,
             ui->canvas,
-            &Canvas::setMirrorMode);
+            &Canvas::onMirrorModeSet);
 
     // Transformations
     connect(ui->actionCwRotate,
@@ -74,7 +74,7 @@ MainWindow::MainWindow(FrameManager& frameManager, QWidget *parent)
 
 
     // Changes modes of the selected tool in canvas
-    connect(this, &MainWindow::toolSelected, ui->canvas, &Canvas::selectTool);
+    connect(this, &MainWindow::toolSelected, ui->canvas, &Canvas::onToolSelected);
     connect(toolButtonGroup,
             QOverload<QAbstractButton*, bool>::of(&QButtonGroup::buttonToggled),
             this,
@@ -111,7 +111,7 @@ MainWindow::MainWindow(FrameManager& frameManager, QWidget *parent)
     connect(ui->spinBox_alpha, QOverload<int>::of(&QSpinBox::valueChanged), this, &MainWindow::emitColorChange);
     connect(ui->slider_alpha, &QSlider::valueChanged, this, &MainWindow::emitColorChange);
     connect(ui->colorHex, &QTextEdit::textChanged, this, &MainWindow::emitHexChange);
-    connect(this, &MainWindow::setCurrentColor, ui->canvas, &Canvas::setCurrentColor);
+    connect(this, &MainWindow::setCurrentColor, ui->canvas, &Canvas::onCurrentColorSet);
 
     // The timer defers these calls until after the constructor so all the signals can be... signaled
     QTimer::singleShot(0, this, [this]() {
@@ -144,7 +144,7 @@ MainWindow::MainWindow(FrameManager& frameManager, QWidget *parent)
     connect(ui->actionDeleteSelectedFrame, &QAction::triggered, &frameManager, &FrameManager::onFrameRemove);
 
     // Pixel drawing
-    connect(ui->canvas, &Canvas::paint, &frameManager, &FrameManager::onPainted);
+    connect(ui->canvas, &Canvas::painted, &frameManager, &FrameManager::onPainted);
     connect(&frameManager, &FrameManager::selectedFrameChanged, ui->canvas, &Canvas::onSelectedFrameChanged);
     connect(this, &MainWindow::frameAdded, &frameManager, &FrameManager::onFrameAdded);
     connect(&frameManager, &FrameManager::sideLengthChanged, ui->canvas, &Canvas::onSideLengthChanged);
