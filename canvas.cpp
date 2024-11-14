@@ -32,39 +32,25 @@ Canvas::~Canvas()
 void Canvas::selectTool(Mode mode)
 {
     currentMode = mode;
-    qDebug() << "selected mode" << mode;
 
-    if (currentMode == Mode::CIRCLE) {
-        qDebug() << "Shape Mode Enabled: Circle Shape selected!";
-    }
-    else if (currentMode == Mode::SQUARE) {
-        qDebug() << "Shape Mode Enabled: Square Shape selected!";
-    }
-    else if (currentMode == Mode::TRIANGLE) {
-        qDebug() << "Shape Mode Enabled: Triangle Shape selected!";
-    }
-
-    if (currentMode == Mode::CIRCLEFILLED || currentMode == Mode::SQUAREFILLED || currentMode == Mode::TRIANGLEFILLED) {
-        isShapeMode = true;
-        qDebug() << "Filled Shape enabled!";
-    }
-    else if (currentMode == Mode::CIRCLE || currentMode == Mode::SQUARE || currentMode == Mode::TRIANGLE) {
-        isShapeMode = true;
-        qDebug() << "Filled Shape disabled!";
-    }
-    else {
-        isShapeMode = false;
+    switch(currentMode){
+        case BRUSH:
+            isShapeMode = false;
+            break;
+        case ERASER:
+            isShapeMode = false;
+            break;
+        default:
+            isShapeMode = true;
     }
 }
 
 void Canvas::setMirrorMode(bool enabled) {
     isMirrorMode = enabled;
-    qDebug() << "Mirror Mode Enabled: " << isMirrorMode;
 }
 
 void Canvas::setCurrentColor(int r, int g, int b, int a) {
     selectedColor = QColor(r, g, b, a);
-    //qDebug() << "Color changed. r: " << r << "g: " << g << "b: " << b << "a: " << a;
 }
 
 void Canvas::onSelectedFrameChanged(Frame *newSelectedFrame) {
