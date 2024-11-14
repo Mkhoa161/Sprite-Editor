@@ -1,10 +1,21 @@
+/*
+    Authors: Zhuyi Bu, Zhenzhi Liu, Justin Melore, Maxwell Rodgers, Duke Nguyen, Minh Khoa Ngo
+    Github usernames: 1144761429, 0doxes0, JustinMelore, maxdotr, duke7012, Mkhoa161
+    Date: November 8th, 2024
+    Class: CS3505, Fall 2024
+    Assignment - A8: Sprite Editor Implementation
+
+    The Frame class serves as the model that stores the data of a frame in the sprite. It has provides some functions
+    that helps to manipulate the data. For example, export the data to json, rotate the frame by 90 degrees, paint at
+    a specified pixel, etc.
+
+    Code style checked by: Maxwell Rodgers
+*/
+
 #include "frame.h"
-#include <QPixmap>
 #include <QImage>
 #include <QJsonDocument>
-#include <QJsonArray>
 #include <QJsonObject>
-#include <QColor>
 #include <QPainter>
 #include <QtSwap>
 
@@ -18,15 +29,13 @@ Frame::Frame(const Frame& other) {
     pixmap = QPixmap(other.pixmap);
 }
 
-Frame& Frame::operator =(Frame other) {
+Frame& Frame::operator=(Frame other) {
     qSwap(pixmap, other.pixmap);
-
     return *this;
 }
 
 QJsonArray Frame::convertToJson() {
     QImage image = pixmap.toImage();
-
     QJsonArray pixelArrayJson;
 
     for (int y = 0; y < image.height(); y++) {
@@ -48,7 +57,6 @@ QJsonArray Frame::convertToJson() {
 
 void Frame::loadFromJson(QJsonValue json) {
     QJsonArray pixelArray = json.toArray();
-
     QImage image(sideLength, sideLength, QImage::Format_ARGB32);
 
     int index = 0;
@@ -76,16 +84,11 @@ void Frame::resizePixmap(int newSideLength) {
     QPixmap newPixmap(newSideLength, newSideLength);
     newPixmap.fill(Qt::transparent);
     QPainter painter(&newPixmap);
-
     painter.drawPixmap(0, 0, pixmap);
     qSwap(pixmap, newPixmap);
 }
 
 void Frame::updatePixmap(QPoint pixelPos, QColor color) {
-    if (!&pixmap) {
-        return;
-    }
-
     QPainter painter(&pixmap);
     painter.setCompositionMode(QPainter::CompositionMode_Source);
     painter.fillRect(pixelPos.x(), pixelPos.y(), 1, 1, color);
@@ -99,6 +102,7 @@ void Frame::rotate(bool isClockwise) {
 
 void Frame::flip(bool isAlongXAxis) {
     QTransform transform;
+
     if (isAlongXAxis) {
         transform.scale(1, -1);
         transform.translate(0, -pixmap.height());
