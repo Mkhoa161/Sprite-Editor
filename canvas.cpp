@@ -1,17 +1,23 @@
+/*
+    The Canvas class is a custom QWidget used within the Sprite Editor application, enabling users to paint, erase,
+    and manipulate pixels within a designated drawing area. As the primary editing surface in the view,
+    Canvas allows for pixel specific changes, supporting various tools, shapes, and colors
+    to create and modify individual frames in the animation sequence.
+
+    Code style checked by: Zhuyi Bu
+*/
+
 #include "canvas.h"
 #include "ui_canvas.h"
-#include <QCursor>
 #include <QMouseEvent>
 #include <QPainter>
-#include <QPen>
 #include <vector>
 
 using std::vector;
 
 Canvas::Canvas(QWidget *parent)
     : QWidget(parent)
-    , ui(new Ui::Canvas)
-{
+    , ui(new Ui::Canvas) {
     ui->setupUi(this);
 
     pixelSize = DEFAULT_PIXEL_SIZE;
@@ -24,13 +30,11 @@ Canvas::Canvas(QWidget *parent)
     backgroundPixmap = QPixmap(size());
 }
 
-Canvas::~Canvas()
-{
+Canvas::~Canvas() {
     delete ui;
 }
 
-void Canvas::selectTool(Mode mode)
-{
+void Canvas::onToolSelected(Mode mode) {
     currentMode = mode;
 
     switch(currentMode){
@@ -45,11 +49,11 @@ void Canvas::selectTool(Mode mode)
     }
 }
 
-void Canvas::setMirrorMode(bool enabled) {
+void Canvas::onMirrorModeSet(bool enabled) {
     isMirrorMode = enabled;
 }
 
-void Canvas::setCurrentColor(int r, int g, int b, int a) {
+void Canvas::onCurrentColorSet(int r, int g, int b, int a) {
     selectedColor = QColor(r, g, b, a);
 }
 
@@ -95,32 +99,32 @@ void Canvas::paintPixels() {
 
     // Select and execute the appropriate painting action based on the current mode
     switch (currentMode) {
-    case BRUSH:
-        brushPainting(color);
-        break;
-    case ERASER:
-        eraserPainting(color);
-        break;
-    case SQUARE:
-        squarePainting(color);
-        break;
-    case SQUAREFILLED:
-        squareFilledPainting(color);
-        break;
-    case CIRCLE:
-        circlePainting(color);
-        break;
-    case CIRCLEFILLED:
-        circleFilledPainting(color);
-        break;
-    case TRIANGLE:
-        trianglePainting(color);
-        break;
-    case TRIANGLEFILLED:
-        triangleFilledPainting(color);
-        break;
-    default:
-        break;
+        case BRUSH:
+            brushPainting(color);
+            break;
+        case ERASER:
+            eraserPainting(color);
+            break;
+        case SQUARE:
+            squarePainting(color);
+            break;
+        case SQUAREFILLED:
+            squareFilledPainting(color);
+            break;
+        case CIRCLE:
+            circlePainting(color);
+            break;
+        case CIRCLEFILLED:
+            circleFilledPainting(color);
+            break;
+        case TRIANGLE:
+            trianglePainting(color);
+            break;
+        case TRIANGLEFILLED:
+            triangleFilledPainting(color);
+            break;
+        default:
+            break;
     }
 
     // Trigger a repaint to apply changes
@@ -131,26 +135,26 @@ void Canvas::moveAndDisplayPixels(QColor color) {
     for (int i = 0; i < int(paintedPixels.size()); i++) {
         QPoint currPixel = paintedPixels[i];
         QColor currColor = paintedColors[i];
-        emit paint(currPixel, currColor);
+        emit painted(currPixel, currColor);
     }
 
     for (QPoint pixel : shapePixels) {
         paintedPixels.push_back(pixel);
         paintedColors.push_back(color);
-        emit paint(pixel, color);
+        emit painted(pixel, color);
     }
     shapePixels.clear();
 }
 
 void Canvas::redrawShape() {
     for (QPoint shapePixel : shapePixels) {
-        emit paint(shapePixel, Qt::transparent);
+        emit painted(shapePixel, Qt::transparent);
     }
 
     for (int i = 0; i < int(paintedPixels.size()); i++) {
         QPoint currPixel = paintedPixels[i];
         QColor currColor = paintedColors[i];
-        emit paint(currPixel, currColor);
+        emit painted(currPixel, currColor);
     }
 }
 
@@ -162,10 +166,10 @@ void Canvas::brushPainting(QColor color) {
         QPoint mirroredPixel = mirrorPixel(mousePixelPos);
         paintedPixels.push_back(mirroredPixel);
         paintedColors.push_back(color);
-        emit paint(mirroredPixel, color);
+        emit painted(mirroredPixel, color);
     }
 
-    emit paint(mousePixelPos, color);
+    emit painted(mousePixelPos, color);
 }
 
 void Canvas::eraserPainting(QColor color) {
@@ -197,10 +201,10 @@ void Canvas::eraserPainting(QColor color) {
         paintedColors.push_back(newPaintedColors[i]);
     }
 
-    emit paint(QPoint(mousePixelPos), color);
+    emit painted(QPoint(mousePixelPos), color);
 
     if (isMirrorMode) {
-        emit paint(mirrorPixel(mousePixelPos), color);
+        emit painted(mirrorPixel(mousePixelPos), color);
     }
 }
 
@@ -241,9 +245,8 @@ void Canvas::squarePainting(QColor color) {
             }
         }
 
-        for (QPoint pixel : shapePixels) emit paint(pixel, color);
-    }
-    else {
+        for (QPoint pixel : shapePixels) emit painted(pixel, color);
+    } else {
         moveAndDisplayPixels(color);
     }
 }
@@ -273,9 +276,8 @@ void Canvas::squareFilledPainting(QColor color) {
             }
         }
 
-        for (QPoint pixel : shapePixels) emit paint(pixel, color);
-    }
-    else {
+        for (QPoint pixel : shapePixels) emit painted(pixel, color);
+    } else {
         moveAndDisplayPixels(color);
     }
 }
@@ -323,16 +325,14 @@ void Canvas::circlePainting(QColor color) {
             // Update decision parameter
             if (decision <= 0) {
                 decision += 2 * y + 1;
-            }
-            else {
+            } else {
                 x--;
                 decision += 2 * (y - x) + 1;
             }
         }
 
-        for (QPoint pixel : shapePixels) emit paint(pixel, color);
-    }
-    else {
+        for (QPoint pixel : shapePixels) emit painted(pixel, color);
+    } else {
         moveAndDisplayPixels(color);
     }
 }
@@ -381,16 +381,14 @@ void Canvas::circleFilledPainting(QColor color) {
             // Update decision parameter
             if (decision <= 0) {
                 decision += 2 * y + 1;
-            }
-            else {
+            } else {
                 x--;
                 decision += 2 * (y - x) + 1;
             }
         }
 
-        for (QPoint pixel : shapePixels) emit paint(pixel, color);
-    }
-    else {
+        for (QPoint pixel : shapePixels) emit painted(pixel, color);
+    } else {
         moveAndDisplayPixels(color);
     }
 }
@@ -438,9 +436,8 @@ void Canvas::trianglePainting(QColor color) {
         drawLine(vertex2, vertex3); // Right edge
         drawLine(vertex3, vertex1); // Left edge
 
-        for (QPoint pixel : shapePixels) emit paint(pixel, color);
-    }
-    else {
+        for (QPoint pixel : shapePixels) emit painted(pixel, color);
+    } else {
         moveAndDisplayPixels(color);
     }
 }
@@ -495,9 +492,8 @@ void Canvas::triangleFilledPainting(QColor color) {
             }
         }
 
-        for (QPoint pixel : shapePixels) emit paint(pixel, color);
-    }
-    else {
+        for (QPoint pixel : shapePixels) emit painted(pixel, color);
+    } else {
         moveAndDisplayPixels(color);
     }
 }
