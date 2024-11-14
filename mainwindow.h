@@ -57,7 +57,7 @@ private slots:
     void emitHexChange();
 
     /// \brief Slot to capture when a user clicks the add frame button, emitting the frameAdded signal.
-    void on_addFrameButton_clicked();
+    void onAddFrameClicked();
 
     /// \brief Slot to capture when a user adds a frame, adjusting the frame spinbox and slider.
     /// \param newFrameCount The count of frames after an insertion of deletion happens.
@@ -78,7 +78,7 @@ private slots:
     /// \brief Slot to capture when a user changes the frames per second of the animation preview.
     /// Emits the fpsUpdated signal with the new fps.
     /// \param fps The value of the frames per second spinbox
-    void on_fpsSpinBox_valueChanged(int fps);
+    void onFpsChanged(int fps);
 
     /// \brief Slot to capture when a user loads a .sprite project file, updating display with project information.
     void onFileLoaded();
@@ -94,7 +94,7 @@ private:
     // Lables that are inside frame previews
     QList<QLabel*> frameLabels;
 
-    // \brief A click selector that adds to frames
+    // A click selector that adds to frames
     bool eventFilter(QObject *obj, QEvent *event) override;
     
     void updateColorPreview(QColor color);
