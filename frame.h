@@ -1,6 +1,6 @@
 /*
-    Authors: Zhuyi Bu, Zhenzhi Liu
-    Github usernames: 1144761429, 0doxes0
+    Authors: Zhuyi Bu, Zhenzhi Liu, Justin Melore, Maxwell Rodgers, Duke Nguyen, Minh Khoa Ngo
+    Github usernames: 1144761429, 0doxes0, JustinMelore, maxdotr, duke7012, Mkhoa161
     Date: November 8th, 2024
     Class: CS3505, Fall 2024
     Assignment - A8: Sprite Editor Implementation
