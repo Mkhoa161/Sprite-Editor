@@ -81,6 +81,11 @@ void Canvas::paintEvent(QPaintEvent *event) {
     }
 }
 
+QPoint Canvas::mirrorPixel(QPoint pixelPosition) {
+    int newPosition = canvasSize / pixelSize - pixelPosition.x() - 1;
+    return QPoint(newPosition, pixelPosition.y());
+}
+
 void Canvas::paintPixels() {
     // Make sure the canvas size is fixed for calculation in Mirror Mode
     canvasSize = pixelSize * sideLength;
@@ -154,12 +159,9 @@ void Canvas::brushPainting(QColor color) {
     paintedColors.push_back(color);
 
     if (isMirrorMode) {
-        int newPosition = canvasSize / pixelSize - mousePixelPos.x() - 1;
-
-        QPoint mirroredPixel = QPoint(newPosition, mousePixelPos.y());
+        QPoint mirroredPixel = mirrorPixel(mousePixelPos);
         paintedPixels.push_back(mirroredPixel);
         paintedColors.push_back(color);
-
         emit paint(mirroredPixel, color);
     }
 
@@ -175,7 +177,7 @@ void Canvas::eraserPainting(QColor color) {
         QColor currColor = paintedColors[i];
         if (!(currPixel.x() == mousePixelPos.x() && currPixel.y() == mousePixelPos.y())) {
             if (isMirrorMode) {
-                QPoint mirroredPixel = QPoint(canvasSize / pixelSize - currPixel.x() - 1, currPixel.y());
+                QPoint mirroredPixel = mirrorPixel(currPixel);
                 if (!(mirroredPixel.x() == mousePixelPos.x() && mirroredPixel.y() == mousePixelPos.y())) {
                     newPaintedPixels.push_back(currPixel);
                     newPaintedColors.push_back(currColor);
@@ -198,8 +200,7 @@ void Canvas::eraserPainting(QColor color) {
     emit paint(QPoint(mousePixelPos), color);
 
     if (isMirrorMode) {
-        QPoint mirroredPixel = QPoint(canvasSize / pixelSize - mousePixelPos.x() - 1, mousePixelPos.y());
-        emit paint(mirroredPixel, color);
+        emit paint(mirrorPixel(mousePixelPos), color);
     }
 }
 
@@ -224,13 +225,8 @@ void Canvas::squarePainting(QColor color) {
             shapePixels.push_back(QPoint(i, y2)); // Bottom edge
 
             if (isMirrorMode) {
-                int newPosition = canvasSize / pixelSize - i - 1;
-
-                QPoint mirroredPixel1 = QPoint(newPosition, y1);
-                shapePixels.push_back(mirroredPixel1);
-
-                QPoint mirroredPixel2 = QPoint(newPosition, y2);
-                shapePixels.push_back(mirroredPixel2);
+                shapePixels.push_back(mirrorPixel(QPoint(i, y1)));
+                shapePixels.push_back(mirrorPixel(QPoint(i, y2)));
             }
         }
 
@@ -240,14 +236,8 @@ void Canvas::squarePainting(QColor color) {
             shapePixels.push_back(QPoint(x2, j)); // Right edge
 
             if (isMirrorMode) {
-                int newPosition1 = canvasSize / pixelSize - x1 - 1;
-
-                QPoint mirroredPixel1 = QPoint(newPosition1, j);
-                shapePixels.push_back(mirroredPixel1);
-
-                int newPosition2 = canvasSize / pixelSize - x2 - 1;
-                QPoint mirroredPixel2 = QPoint(newPosition2, j);
-                shapePixels.push_back(mirroredPixel2);
+                shapePixels.push_back(mirrorPixel(QPoint(x1, j)));
+                shapePixels.push_back(mirrorPixel(QPoint(x2, j)));
             }
         }
 
@@ -278,10 +268,7 @@ void Canvas::squareFilledPainting(QColor color) {
                 shapePixels.push_back(QPoint(i, j));
 
                 if (isMirrorMode) {
-                    int newPosition = canvasSize / pixelSize - i - 1;
-
-                    QPoint mirroredPixel = QPoint(newPosition, j);
-                    shapePixels.push_back(mirroredPixel);
+                    shapePixels.push_back(mirrorPixel(QPoint(i, j)));
                 }
             }
         }
@@ -327,9 +314,7 @@ void Canvas::circlePainting(QColor color) {
 
                 // If mirroring is enabled, add mirrored pixels
                 if (isMirrorMode) {
-                    int mirroredX = canvasSize / pixelSize - point.x() - 1;
-                    QPoint mirroredPixel(mirroredX, point.y());
-                    shapePixels.push_back(mirroredPixel);
+                    shapePixels.push_back(mirrorPixel(point));
                 }
             }
 
@@ -375,9 +360,8 @@ void Canvas::circleFilledPainting(QColor color) {
 
                 // Mirroring pixels if isMirrorMode is enabled
                 if (isMirrorMode) {
-                    int mirroredX = canvasSize / pixelSize - i - 1;
-                    shapePixels.push_back(QPoint(mirroredX, center.y() + y));
-                    shapePixels.push_back(QPoint(mirroredX, center.y() - y));
+                    shapePixels.push_back(mirrorPixel(QPoint(i, center.y() + y)));
+                    shapePixels.push_back(mirrorPixel(QPoint(i, center.y() - y)));
                 }
             }
 
@@ -387,9 +371,8 @@ void Canvas::circleFilledPainting(QColor color) {
 
                 // Mirroring pixels if isMirrorMode is enabled
                 if (isMirrorMode) {
-                    int mirroredX = canvasSize / pixelSize - i - 1;
-                    shapePixels.push_back(QPoint(mirroredX, center.y() + x));
-                    shapePixels.push_back(QPoint(mirroredX, center.y() - x));
+                    shapePixels.push_back(mirrorPixel(QPoint(i, center.y() + x)));
+                    shapePixels.push_back(mirrorPixel(QPoint(i, center.y() - x)));
                 }
             }
 
@@ -440,8 +423,7 @@ void Canvas::trianglePainting(QColor color) {
                 shapePixels.push_back(QPoint(x1, y1));
 
                 if (isMirrorMode) {
-                    int mirroredX = canvasSize / pixelSize - x1 - 1;
-                    shapePixels.push_back(QPoint(mirroredX, y1));
+                    shapePixels.push_back(mirrorPixel(QPoint(x1, y1)));
                 }
 
                 if (x1 == x2 && y1 == y2) break;
@@ -508,8 +490,7 @@ void Canvas::triangleFilledPainting(QColor color) {
 
                 // Mirroring pixels if isMirrorMode is enabled
                 if (isMirrorMode) {
-                    int mirroredX = canvasSize / pixelSize - x - 1;
-                    shapePixels.push_back(QPoint(mirroredX, y));
+                    shapePixels.push_back(mirrorPixel(QPoint(x, y)));
                 }
             }
         }
