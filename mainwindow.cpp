@@ -1,3 +1,18 @@
+/*
+    Authors: Zhuyi Bu, Zhenzhi Liu, Justin Melore, Maxwell Rodgers, Duke Nguyen, Minh Khoa Ngo
+    Github usernames: 1144761429, 0doxes0, JustinMelore, maxdotr, duke7012, Mkhoa161
+    Date: November 12th, 2024
+    Class: CS3505, Fall 2024
+    Assignment - A8: Sprite Editor Implementation
+
+    The MainWindow class serves as the main view for the Sprite Editor, providing the user interface
+    for interacting with the FrameManager model and manipulating frames in an animation sequence.
+    As the central view component, MainWindow manages user inputs, coordinates UI elements such as tool selections,
+    color pickers, and frame previews, and facilitates updates in response to changes in the underlying data.
+
+    Code style checked by: Minh Khoa Ngo (Mkhoa161)
+*/
+
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "framemanager.h"
@@ -6,8 +21,7 @@
 
 MainWindow::MainWindow(FrameManager& frameManager, QWidget *parent)
     : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
-{
+    , ui(new Ui::MainWindow) {
     ui->setupUi(this);
     canvasSizing = new CanvasSizing();
     
@@ -16,7 +30,7 @@ MainWindow::MainWindow(FrameManager& frameManager, QWidget *parent)
 
     // Add actions to a group so that they're exclusive
     toolButtonGroup = new QButtonGroup(this);
-    toolButtonGroup->addButton(ui->penButton, 0); // numbers depending on the enum
+    toolButtonGroup->addButton(ui->penButton, 0);
     toolButtonGroup->addButton(ui->eraserButton, 1);
     toolButtonGroup->addButton(ui->sphereShapeButton, 2);
     toolButtonGroup->addButton(ui->filledSphereShapeButton, 3);
@@ -24,9 +38,6 @@ MainWindow::MainWindow(FrameManager& frameManager, QWidget *parent)
     toolButtonGroup->addButton(ui->filledBoxShapeButton, 5);
     toolButtonGroup->addButton(ui->triangleShapeButton, 6);
     toolButtonGroup->addButton(ui->filledTriangleShapeButton, 7);
-
-    //ui->penButton->
-    //ui->actionPen->setEnabled(false);
 
     // Pen and eraser in the toolbar(not checkable)
     connect(ui->actionPen,
@@ -69,9 +80,6 @@ MainWindow::MainWindow(FrameManager& frameManager, QWidget *parent)
             &QAction::triggered,
             &frameManager,
             &FrameManager::onFlipAlongY);
-
-
-
 
     // Changes modes of the selected tool in canvas
     connect(this, &MainWindow::toolSelected, ui->canvas, &Canvas::onToolSelected);
@@ -173,14 +181,12 @@ MainWindow::MainWindow(FrameManager& frameManager, QWidget *parent)
     connect(&frameManager, &FrameManager::sideLengthChanged, this, [&frameManager, this](int _) {this->updateFramePreviews(frameManager.getFrames());});
 }
 
-MainWindow::~MainWindow()
-{
+MainWindow::~MainWindow() {
     delete ui;
     delete toolButtonGroup;
 }
 
-void MainWindow::emitColorChange()
-{
+void MainWindow::emitColorChange() {
     int r = ui->spinBox_red->value();
     int g = ui->spinBox_green->value();
     int b = ui->spinBox_blue->value();
@@ -195,8 +201,8 @@ void MainWindow::emitColorChange()
 
     emit setCurrentColor(r, g, b, a);
 }
-void MainWindow::emitHexChange()
-{
+
+void MainWindow::emitHexChange() {
     QString hex = ui->colorHex->toPlainText();
     QColor hexToRGB(hex);
 
@@ -223,15 +229,13 @@ void MainWindow::emitHexChange()
     emitColorChange();
 }
 
-void MainWindow::updateColorPreview(QColor color)
-{
+void MainWindow::updateColorPreview(QColor color) {
     QString colorString = color.name(QColor::HexArgb);
     ui->colorPreview->setStyleSheet(QString("background-color: %1;").arg(colorString));
 }
 
 
-void MainWindow::onAddFrameClicked()
-{
+void MainWindow::onAddFrameClicked() {
     emit frameAdded();
 }
 
@@ -278,8 +282,7 @@ void MainWindow::updateFramePreviews(const std::vector<Frame*>& frames) {
     frameLabels = scrollContent->findChildren<QLabel*>();
 }
 
-void MainWindow::updateAnimationPreview(const Frame& frame)
-{
+void MainWindow::updateAnimationPreview(const Frame& frame) {
     QPixmap scaledPixmap = frame.pixmap.scaled(80,80);
     ui->AnimationPreview->setPixmap(scaledPixmap);
 }
@@ -296,8 +299,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event) {
     return QMainWindow::eventFilter(obj, event);
 }
 
-void MainWindow::onFpsChanged(int fps)
-{
+void MainWindow::onFpsChanged(int fps) {
     emit fpsUpdated(fps);
 }
 
