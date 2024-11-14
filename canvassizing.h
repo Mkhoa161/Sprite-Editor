@@ -6,21 +6,26 @@
     Assignment - A8: Sprite Editor Implementation
 
     The CanvasSizing class serves as the the view of the pop-up window that let users to change the side length/dimension
-    of the canvas they are painting on.
+    of the canvas they are painting on. This file serves to set up the fields and methods for the class.
+
+    Code style checked by: Justin Melore
 */
 
 #ifndef CANVASSIZING_H
 #define CANVASSIZING_H
 
-#include "canvas.h"
+// #include "canvas.h"
 #include <QDialog>
 
 namespace Ui {
 class CanvasSizing;
 }
 
-class CanvasSizing : public QDialog
-{
+///
+/// \brief The CanvasSizing class allows the user to modify the size of the Canvas widget in the UI. The
+/// widget appears as a popup on the UI and size of the canvas is measured in pixels.
+///
+class CanvasSizing : public QDialog {
     Q_OBJECT
 
 public:
