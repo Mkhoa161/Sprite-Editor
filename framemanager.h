@@ -58,8 +58,8 @@ signals:
     void sideLengthChanged(int newSideLength);
     void framesChanged(const std::vector<Frame*>& frames);
     void frameCountChanged(int newCount);
-    void selectFrameSignal(int frameIndex);
-    void updateAnimationPreview(const Frame& frame);
+    void frameSelected(int frameIndex);
+    void animationPreviewUpdated(const Frame& frame);
     void fileLoaded();
 
 public slots:
