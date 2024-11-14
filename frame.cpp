@@ -8,8 +8,6 @@
 #include <QPainter>
 #include <QtSwap>
 
-#include <QDebug>
-
 Frame::Frame(int sideLength) {
     pixmap = QPixmap(sideLength, sideLength);
     pixmap.fill(Qt::transparent);
