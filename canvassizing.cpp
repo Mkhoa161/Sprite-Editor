@@ -4,8 +4,6 @@
 #include <QPushButton>
 #include <QSpinBox>
 
-#include <QDebug>
-
 CanvasSizing::CanvasSizing(QWidget *parent)
     : QDialog(parent)
     , ui(new Ui::CanvasSizing)
