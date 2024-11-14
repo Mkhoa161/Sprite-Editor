@@ -189,7 +189,7 @@ private:
 
     /// \brief Draws a set of pixels reflected across the Y axis.
     /// \param pixelPositions The position of the pixels to be reflected across the Y axis.
-    std::vector<QPoint> mirrorPixels(std::vector<QPoint> pixelPositions);
+    QPoint mirrorPixel(QPoint pixelPosition);
 
     /// \brief Overriden resizeEvent of QWidger, to redraw the canvas to fit inside the UI.
     /// \param event QT event parent.
