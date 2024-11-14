@@ -94,7 +94,7 @@ private:
     // Lables that are inside frame previews
     QList<QLabel*> frameLabels;
 
-    // \brief A click selector that adds to frames
+    // A click selector that adds to frames
     bool eventFilter(QObject *obj, QEvent *event) override;
     
     void updateColorPreview(QColor color);
