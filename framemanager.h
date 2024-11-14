@@ -9,6 +9,8 @@
     It maintains and manipulates a collection of Frame objects, enabling frame selection, addition, removal, and ordering.
     This class also coordinates animation playback, frame transformation, and updates for previewing
     animations, all while ensuring changes are communicated to connected views and controllers.
+
+    Reviewed by Zhenzhi Liu
 */
 
 #ifndef FRAMEMANAGER_H
@@ -84,11 +86,11 @@ public slots:
 
     /// \brief Slot capturing when a user updates the frames per second of the animation preview.
     /// \param newFps The new frames per second of the animation preview.
-    void fpsUpdated(int newFps);
+    void onFpsUpdated(int newFps);
 
     /// \brief Slot to update the animation preview. Emits the updateAnimationPreview signal, providing a reference to the frame.
     /// Called by a QTimer, with the interval declared by the current frames per second stored in the Frame Manager.
-    void updatePreview();
+    void onUpdatePreview();
 
     /// \brief Slot capturing when the user rotates frames clockwise.
     /// Emits the selectedFrameChanged and the framesChanged signals.
@@ -116,11 +118,11 @@ public slots:
     void onLoadFile();
     
 private:
-    std::vector<Frame*> frames;
     int selectedFrameIndex;
     int sideLength;
     int fps;
     int animFrameIndex = 0;
+    std::vector<Frame*> frames;
     QTimer animationTimer;
 };
 

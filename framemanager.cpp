@@ -1,5 +1,16 @@
+/*
+    Authors: Zhuyi Bu, Zhenzhi Liu, Justin Melore, Maxwell Rodgers, Duke Nguyen, Minh Khoa Ngo
+    Github usernames: 1144761429, 0doxes0, JustinMelore, maxdotr, duke7012, Mkhoa161
+    Date: November 12th, 2024
+    Class: CS3505, Fall 2024
+    Assignment - A8: Sprite Editor Implementation
+
+    The cpp file for the FrameManager class.
+
+    code style checked by: Zhenzhi Liu
+*/
+
 #include "framemanager.h"
-#include <QDebug>
 #include <QJsonDocument>
 #include <QJsonArray>
 #include <QJsonObject>
@@ -9,8 +20,8 @@
 #include <QByteArray>
 
 FrameManager::FrameManager(int sideLength, int fps, QObject *parent)
-    : selectedFrameIndex(-1), sideLength(sideLength), fps(fps), QObject{parent} {
-    connect(&animationTimer, &QTimer::timeout, this, &FrameManager::updatePreview);
+    : QObject{parent}, selectedFrameIndex(-1), sideLength(sideLength), fps(fps) {
+    connect(&animationTimer, &QTimer::timeout, this, &FrameManager::onUpdatePreview);
     animationTimer.start(1000 / fps);
 }
 
@@ -19,7 +30,6 @@ void FrameManager::onSetSideLength(int length) {
     for (Frame* frame : frames) {
         frame->resizePixmap(sideLength);
     }
-
     emit sideLengthChanged(sideLength);
 }
 
@@ -36,14 +46,12 @@ void FrameManager::onFrameAdded() {
 
     // Add the newly created Frame object to the vector
     frames.push_back(newFrame);
-
     if (selectedFrameIndex == -1) {
         selectFrame(0); // Select the first frame by default
     }
 
     emit frameCountChanged(frames.size());
     emit framesChanged(getFrames());
-
     selectFrame(frames.size() - 1);
 }
 
@@ -84,7 +92,6 @@ Frame* FrameManager::getSelectedFrame() {
     if (selectedFrameIndex >= 0 && selectedFrameIndex < int(frames.size())) {
         return frames[selectedFrameIndex];
     }
-
     // Return a reference to an empty frame if none is selected (you can handle this as needed)
     return nullptr;
 }
@@ -102,7 +109,7 @@ void FrameManager::onFrameSelect(int frameIndex) {
     selectFrame(frameIndex);
 }
 
-void FrameManager::fpsUpdated(int newFps)
+void FrameManager::onFpsUpdated(int newFps)
 {
     fps = newFps;
     if (fps > 0) {
@@ -113,7 +120,7 @@ void FrameManager::fpsUpdated(int newFps)
     }
 }
 
-void FrameManager::updatePreview() {
+void FrameManager::onUpdatePreview() {
     if (!frames.empty()) {
         emit animationPreviewUpdated(*frames[animFrameIndex]);
         animFrameIndex = (animFrameIndex + 1) % frames.size();

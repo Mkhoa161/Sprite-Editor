@@ -163,7 +163,7 @@ MainWindow::MainWindow(FrameManager& frameManager, QWidget *parent)
     connect(&frameManager, &FrameManager::frameSelected, this, &MainWindow::onSelectFrame);
 
     // Animation preview
-    connect(this, &MainWindow::fpsUpdated, &frameManager, &FrameManager::fpsUpdated);
+    connect(this, &MainWindow::fpsUpdated, &frameManager, &FrameManager::onFpsUpdated);
     connect(&frameManager, &FrameManager::animationPreviewUpdated, this, &MainWindow::updateAnimationPreview);
 
     frameManager.onSetSideLength(16);
@@ -242,7 +242,7 @@ void MainWindow::frameCountChanged(int newFrameCount) {
 
 void MainWindow::onSelectFrame(int index) {
     frameLabels[index]->setStyleSheet("QLabel { border: 1px solid #2196F3; }");
-    if (selectedFrameIndex >= 0 && selectedFrameIndex <= frameLabels.size() - 1) {
+    if (selectedFrameIndex >= 0 && selectedFrameIndex <= frameLabels.size() - 1 && selectedFrameIndex != index) {
         frameLabels[selectedFrameIndex]->setStyleSheet("QLabel { border: 1px solid #DEDEDE; }");
     }
     selectedFrameIndex = index;
