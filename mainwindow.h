@@ -9,6 +9,8 @@
     for interacting with the FrameManager model and manipulating frames in an animation sequence.
     As the central view component, MainWindow manages user inputs, coordinates UI elements such as tool selections,
     color pickers, and frame previews, and facilitates updates in response to changes in the underlying data.
+
+    Code style checked by: Minh Khoa Ngo (Mkhoa161)
 */
 
 #ifndef MAINWINDOW_H
@@ -88,15 +90,12 @@ private:
     // set to allow exclusive selection between those tools
     QButtonGroup* toolButtonGroup;
     CanvasSizing* canvasSizing;
-
     // used to keep track of which frame is selected and has a "frame" that we should make invisible later
     int selectedFrameIndex = -1;
     // Lables that are inside frame previews
     QList<QLabel*> frameLabels;
-
     // A click selector that adds to frames
     bool eventFilter(QObject *obj, QEvent *event) override;
-    
     void updateColorPreview(QColor color);
 };
 #endif // MAINWINDOW_H
