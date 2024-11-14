@@ -8,6 +8,8 @@
     The Frame class serves as the model that stores the data of a frame in the sprite. It has provides some functions
     that helps to manipulate the data. For example, export the data to json, rotate the frame by 90 degrees, paint at
     a specified pixel, etc.
+
+    Code style checked by: Maxwell Rodgers
 */
 
 #ifndef FRAME_H
