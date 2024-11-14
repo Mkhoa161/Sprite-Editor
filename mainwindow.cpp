@@ -113,6 +113,12 @@ MainWindow::MainWindow(FrameManager& frameManager, QWidget *parent)
     connect(ui->colorHex, &QTextEdit::textChanged, this, &MainWindow::emitHexChange);
     connect(this, &MainWindow::setCurrentColor, ui->canvas, &Canvas::setCurrentColor);
 
+    // Handle fps changed
+    connect(ui->fpsSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, &MainWindow::onFpsChanged);
+
+    // Handle add frame button clicked
+    connect(ui->addFrameButton, &QToolButton::clicked, this, &MainWindow::onAddFrameClicked);
+
     // The timer defers these calls until after the constructor so all the signals can be... signaled
     QTimer::singleShot(0, this, [this]() {
         Canvas::Mode defaultMode = ui->canvas->DEFAULT_MODE;
@@ -224,7 +230,7 @@ void MainWindow::updateColorPreview(QColor color)
 }
 
 
-void MainWindow::on_addFrameButton_clicked()
+void MainWindow::onAddFrameClicked()
 {
     emit frameAdded();
 }
@@ -290,7 +296,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event) {
     return QMainWindow::eventFilter(obj, event);
 }
 
-void MainWindow::on_fpsSpinBox_valueChanged(int fps)
+void MainWindow::onFpsChanged(int fps)
 {
     emit fpsUpdated(fps);
 }
