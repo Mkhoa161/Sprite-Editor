@@ -126,7 +126,7 @@ private:
 
     void paintCheckerBoard(int resolution);
 
-    std::vector<QPoint> mirrorPixels(std::vector<QPoint> pixelPositions);
+    QPoint mirrorPixel(QPoint pixelPosition);
 
     virtual void resizeEvent(QResizeEvent *event) override;
 
